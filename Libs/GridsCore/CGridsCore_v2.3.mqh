@@ -417,15 +417,6 @@ int CGridsCore::CalculateHeiken()
    m_heikenDirection = newDirection;
    m_heikenReversed = (m_heikenDirection != m_heikenPrevDirection && m_heikenPrevDirection != 0);
    
-   if(m_config.showDebugLogs)
-     {
-      WriteDebugLog("Heiken Calc: HA_Close=" + DoubleToString(haClose, m_digits) + 
-                    ", HA_Open=" + DoubleToString(haOpen, m_digits) + 
-                    ", Dir=" + IntegerToString(m_heikenDirection) + 
-                    ", Consec=" + IntegerToString(m_heikenConsecutive) +
-                    ", Reversed=" + (m_heikenReversed?"Y":"N"));
-     }
-   
    if(m_heikenReversed) 
      {
       m_tradedThisSignal = false;
@@ -508,7 +499,6 @@ bool CGridsCore::AllowAveraging(int dir)
      }
    if(m_config.filterMode == FILTER_HeikenAshi)
      {
-      if(m_config.showDebugLogs) WriteDebugLog("AllowAvg check: Dir=" + IntegerToString(dir) + ", Sig=" + IntegerToString(s));
       if(m_config.gridMode == GRID_MODE_TREND)
         {
          if(dir == OP_BUY) return (s == SIGNAL_BUY);
@@ -633,7 +623,6 @@ void CGridsCore::Execute(const OrderStats &stats)
       if(m_config.oneOrderPerBar == NO && curTime == m_lastOrderTime) ok = false;
       if(m_buyGridLevel == 0 && stats.buyCount == 0 && (sig == SIGNAL_BUY || isSimp) && allow1 && ok)
         {
-         if(m_config.showDebugLogs) WriteDebugLog("Attempting Open BUY L1: Sig=" + IntegerToString(sig) + ", Allow1=" + (allow1?"1":"0") + ", OK=" + (ok?"1":"0"));
          double l = CalculateLots(1);
          if(OpenGridOrder(OP_BUY, l)) 
            { 
@@ -673,7 +662,6 @@ void CGridsCore::Execute(const OrderStats &stats)
       if(m_config.oneOrderPerBar == NO && curTime == m_lastOrderTime) ok = false;
       if(m_sellGridLevel == 0 && stats.sellCount == 0 && (sig == SIGNAL_SELL || isSimp) && allow1 && ok)
         {
-         if(m_config.showDebugLogs) WriteDebugLog("Attempting Open SELL L1: Sig=" + IntegerToString(sig) + ", Allow1=" + (allow1?"1":"0") + ", OK=" + (ok?"1":"0"));
          double l = CalculateLots(1);
          if(OpenGridOrder(OP_SELL, l)) 
            { 

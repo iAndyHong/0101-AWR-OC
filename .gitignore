@@ -1,6 +1,7 @@
 # MQL Binaries
 *.ex4
 *.ex5
+*.exe
 
 # Log files
 *.log
