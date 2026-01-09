@@ -5,6 +5,8 @@
 # Log files
 *.log
 *.txt
+*.tmp
+*.temp
 
 # Project Backups
 Backups/
