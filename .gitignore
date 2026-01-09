@@ -1,0 +1,18 @@
+# MQL Binaries
+*.ex4
+*.ex5
+
+# Log files
+*.log
+*.txt
+
+# Project Backups
+Backups/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Kiro/OpenCode temporary files
+.kiro/
+.opencode/logs/

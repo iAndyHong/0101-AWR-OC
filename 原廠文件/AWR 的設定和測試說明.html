@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)https://www.mql5.com/en/blogs/post/749585 -->
+<html lang="en"><script async="" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/rq"></script><script async="" defer="" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/core.js"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/content/location/location.js" id="eppiocemhmnlbhjplcgkofciiegomcon"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/extend-native-history-api.js"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/requests.js"></script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="dns-prefetch" href="https://c.mql5.com/">
+  <meta name="robots" content="max-snippet:250,max-image-preview:large">
+  <meta name="description" content="The Expert Advisor is a system designed to recover unprofitable positions. &amp;nbsp; The author&#39;s algorithm locks a losing position, splits it into many separate parts, and closes each of them">
+  <meta property="og:url" content="https://www.mql5.com/en/blogs/post/749585">
+  <meta property="og:title" content="Instructions for setting up and testing the AW Recovery Expert Advisor">
+  <meta property="og:description" content="The Expert Advisor is a system designed to recover unprofitable positions. &amp;nbsp; The author&#39;s algorithm locks a losing position, splits it into many separate parts, and closes each of them">
+      <meta property="og:image" content="https://c.mql5.com/6/907/splash-749585-1655919955.png">
+      <meta property="og:image:secure_url" content="https://c.mql5.com/6/907/splash-749585-1655919955.png">
+  <meta property="og:image:width" content="1328">
+  <meta property="og:image:height" content="248">
+  <meta property="og:type" content="blog">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@mql5com">
+  <meta name="twitter:image" content="https://c.mql5.com/6/907/splash-749585-1655919955.png">
+  <meta name="theme-color" content="#4a76b8">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="https://www.mql5.com/manifest.json">
+  <link rel="apple-touch-icon" sizes="57x57" href="https://www.mql5.com/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://www.mql5.com/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="https://www.mql5.com/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="https://www.mql5.com/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="https://www.mql5.com/apple-touch-icon-167x167.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://www.mql5.com/apple-touch-icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="https://www.mql5.com/apple-touch-icon-192x192.png">
+  <link rel="icon" sizes="192x192" href="https://www.mql5.com/android-touch-icon-192x192.png">
+  <link rel="icon" sizes="128x128" href="https://www.mql5.com/android-touch-icon-128x128.png">
+  <link rel="shortcut icon" href="https://c.mql5.com/i/favicon4.ico">
+  <meta name="msapplication-config" content="none">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta property="qc:admins" content="36367170677651456375">
+  <meta property="wb:webmaster" content="073d7690269bcd81">
+  <link href="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/core.0c57de90bcc74f90847def0eb79c0a40.css" type="text/css" rel="stylesheet" media="all">
+  <link href="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/all.dff974f98181b0638ee46c8800fb9dd9.css" type="text/css" rel="stylesheet" media="all">
+  <link rel="stylesheet" href="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/chat.0e624e155e0815a7edf5d716c75e4c2a.css" as="style" onload="this.onload=null;this.rel=&#39;stylesheet&#39;">
+  <noscript><link href="https://c.mql5.com/styles/chat.0e624e155e0815a7edf5d716c75e4c2a.css" type="text/css" rel="stylesheet" media="all"></noscript>
+  <link href="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/blogs.ba70a2c17d8d52b10e35e23a1d86c640.css" type="text/css" rel="stylesheet" media="all">
+  <link href="https://www.mql5.com/en/blogs/rss" rel="alternate" type="application/rss+xml" title="Trading blogs and financial markets analysis">
+  <link rel="canonical" href="https://www.mql5.com/en/blogs/post/749585">
+  <title>Instructions for setting up and testing the AW Recovery Expert Advisor - My Trading - 22 June 2022 - Traders' Blogs</title>
+
+
+<script type="text/javascript">
+  !function(){window.mqGlobal={};var t=!1,n=!1,e=[],o=[],i=[];function d(t){var n;for(n=0;n<t.length;n+=1)t[n]()}function c(){t||(t=!0,d(e),d(o),o=[],e=[])}function a(){c(),n||(n=!0,d(i),i=[])}if(mqGlobal.AddOnReady=function(n,i){t?n(document):i?e.push(n):o.push(n)},mqGlobal.AddOnLoad=function(t){n?t(document):i.push(t)},mqGlobal.AddOnActiveWindowChange=function(t){this._onvisibility||(this._onvisibility=[]),this._onvisibility[this._onvisibility.length]=t},document.addEventListener)document.addEventListener("DOMContentLoaded",c,!1),window.addEventListener("load",a,!1);else if(document.attachEvent&&(document.attachEvent("onreadystatechange",(function(){switch(document.readyState){case"interactive":c();break;case"complete":a()}})),window.attachEvent("onload",a),document.documentElement.doScroll&&window==window.top)){!function n(){if(!t&&document.body)try{document.documentElement.doScroll("left"),c()}catch(t){setTimeout(n,0)}}()}}();
+  mqGlobal.CookieDomain = ".mql5.com";
+  mqGlobal.Language = 'en';
+  mqGlobal.IsMobile = false;
+  mqGlobal.ClearRteStorage = function (e) { if (window.GStorage || (window.GStorage = globalStorage()), window.GStorage.supported) try { var o = e; window.GStorage.getItem("rte_autosave_uid", function (e, t) { t == o && (window.GStorage.removeItem("rte_autosave_text"), window.GStorage.removeItem("rte_autosave_date"), window.GStorage.removeItem("rte_autosave_uid")) }) } catch (e) { } };
+</script><script bis_use="true" type="text/javascript" charset="utf-8" data-bis-config="[&quot;facebook.com/&quot;,&quot;twitter.com/&quot;,&quot;youtube-nocookie.com/embed/&quot;,&quot;//vk.com/&quot;,&quot;//www.vk.com/&quot;,&quot;linkedin.com/&quot;,&quot;//www.linkedin.com/&quot;,&quot;//instagram.com/&quot;,&quot;//www.instagram.com/&quot;,&quot;//www.google.com/recaptcha/api2/&quot;,&quot;//hangouts.google.com/webchat/&quot;,&quot;//www.google.com/calendar/&quot;,&quot;//www.google.com/maps/embed&quot;,&quot;spotify.com/&quot;,&quot;soundcloud.com/&quot;,&quot;//player.vimeo.com/&quot;,&quot;//disqus.com/&quot;,&quot;//tgwidget.com/&quot;,&quot;//js.driftt.com/&quot;,&quot;friends2follow.com&quot;,&quot;/widget&quot;,&quot;login&quot;,&quot;//video.bigmir.net/&quot;,&quot;blogger.com&quot;,&quot;//smartlock.google.com/&quot;,&quot;//keep.google.com/&quot;,&quot;/web.tolstoycomments.com/&quot;,&quot;moz-extension://&quot;,&quot;chrome-extension://&quot;,&quot;/auth/&quot;,&quot;//analytics.google.com/&quot;,&quot;adclarity.com&quot;,&quot;paddle.com/checkout&quot;,&quot;hcaptcha.com&quot;,&quot;recaptcha.net&quot;,&quot;2captcha.com&quot;,&quot;accounts.google.com&quot;,&quot;www.google.com/shopping/customerreviews&quot;,&quot;buy.tinypass.com&quot;,&quot;gstatic.com&quot;,&quot;secureir.ebaystatic.com&quot;,&quot;docs.google.com&quot;,&quot;contacts.google.com&quot;,&quot;github.com&quot;,&quot;mail.google.com&quot;,&quot;chat.google.com&quot;,&quot;audio.xpleer.com&quot;,&quot;keepa.com&quot;,&quot;static.xx.fbcdn.net&quot;,&quot;sas.selleramp.com&quot;,&quot;1plus1.video&quot;,&quot;console.googletagservices.com&quot;,&quot;//lnkd.demdex.net/&quot;,&quot;//radar.cedexis.com/&quot;,&quot;//li.protechts.net/&quot;,&quot;challenges.cloudflare.com/&quot;,&quot;ogs.google.com&quot;]" src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/executors/traffic.js"></script>
+  
+
+  <script type="text/javascript">
+	mqGlobal.AddOnReady(function(){window.siteUpdates = new SiteUpdates('/en/updates',10,'en',[1,21],1765547006,0);});
+	</script>
+
+    <script src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/all.e1134b33ed037dee058e20f3d8a4ce84.js" type="text/javascript" defer="defer"></script>
+  <script src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/vendor.70b27afe00f90cf80437050e0ae5079b.js" type="text/javascript" defer="defer"></script>
+  <script src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/chat.cbfb20ae309d8f534a317dfb1508f9cb.js" type="text/javascript" defer="defer"></script>
+  <script src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/blogs.2458ac8a54532bd95d41af7bf8c708cb.js" type="text/javascript" defer="defer"></script>
+
+
+<style id="c-nvz9zt">.s-suggestions.c-nvz9zt{position:absolute;left:0;right:0;top:100%;z-index:100;background:#fff;box-shadow:0 2px 6px rgba(0, 0, 0, 0.1);border-top:1px solid #dadada}</style><style>
+  #chat-header {
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eaecef;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .model-dropdown {
+    flex: 1;
+    min-width: 120px;
+    max-width: 180px;
+    padding: 4px 6px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 12px;
+    color: #333;
+    cursor: pointer;
+  }
+
+  .model-dropdown:hover {
+    border-color: #bbb;
+  }
+
+  .model-dropdown:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 2px rgba(40,167,69,0.2);
+  }
+
+  #expand-chat, #close-chat {
+    min-width: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #expand-chat:hover, #close-chat:hover {
+    color: #000;
+  }
+
+  #chat-messages {
+    margin-top: 0;
+  }
+
+  #chat-window.expanded .model-dropdown {
+    max-width: 220px;
+    font-size: 13px;
+  }
+
+  #theme-toggle {
+    min-width: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    font-size: 16px;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #theme-toggle:hover {
+    color: #333;
+  }
+
+  /* 요약창 레이아웃 */
+  #ai-summarize-window {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    color: #333;
+    height: 70vh;
+  }
+  
+  #summarize-header {
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eaecef;
+    flex-shrink: 0;
+  }
+  
+  #summarize-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 0;
+    background-color: #fff;
+  }
+  
+  #summary-display {
+    padding: 0 15px;
+    min-height: 100px;
+  }
+  
+  #summarize-controls-container {
+    border-top: 1px solid #eaecef;
+    background-color: #f8f9fa;
+    flex-shrink: 0;
+    padding-bottom: 10px;
+  }
+
+  /* 사용자 정의 프롬프트 스타일 */
+  #custom-prompt-container {
+    margin: 5px 5px;
+    padding: 0;
+    width: calc(100% - 10px);
+    box-sizing: border-box;
+  }
+
+  #custom-prompt {
+    width: 100%;
+    min-height: 50px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    resize: none;
+    box-sizing: border-box;
+    background-color: #f8f9fa;
+    color: #333;
+  }
+
+  #custom-prompt:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 2px rgba(40,167,69,0.2);
+  }
+
+  /* 요약하기 버튼 스타일 */
+  #summarize-button {
+    width: calc(100% - 10px);
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 5px 5px;
+    transition: background-color 0.3s;
+    box-sizing: border-box;
+  }
+  
+  #summarize-button:hover {
+    background-color: #218838;
+  }
+  
+  #summarize-input-container {
+    padding: 0 0 10px 0;
+  }
+
+  /* 요약 옵션 스타일 개선 */
+  .summarize-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 5px 5px;
+  }
+  
+  .summarize-option {
+    padding: 6px 12px;
+    background-color: #f0f0f0;
+    border-radius: 16px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .summarize-option:hover {
+    background-color: #e0e0e0;
+  }
+
+  .summarize-option.active {
+    background-color: #28a745;
+    color: white;
+  }
+
+  /* 요약 결과 메시지 스타일 */
+  .summarize-message {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  
+  .summarize-message.ai-message {
+    background-color: #e6f4ff;
+  }
+  
+  .summarize-message .sender-label {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    margin-right: 8px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  
+  .summarize-message .ai-label {
+    background-color: #28a745;
+    color: white;
+  }
+
+  /* 다크모드 스타일 */
+  #ai-chat-window.dark-mode {
+    background-color: #1a1a1a;
+    color: #fff;
+  }
+
+  #ai-chat-window.dark-mode #chat-header {
+    background: #2d2d2d;
+    border-bottom: 1px solid #404040;
+  }
+
+  #ai-chat-window.dark-mode .model-dropdown {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #fff;
+  }
+
+  #ai-chat-window.dark-mode #chat-input {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #fff;
+  }
+
+  #ai-chat-window.dark-mode #theme-toggle,
+  #ai-chat-window.dark-mode #expand-chat,
+  #ai-chat-window.dark-mode #close-chat {
+    color: #999;
+  }
+
+  #ai-chat-window.dark-mode #theme-toggle:hover,
+  #ai-chat-window.dark-mode #expand-chat:hover,
+  #ai-chat-window.dark-mode #close-chat:hover {
+    color: #fff;
+  }
+
+  /* 다크모드 - 요약창 스타일 */
+  #ai-summarize-window.dark-mode {
+    background-color: #1a1a1a;
+    color: #fff;
+  }
+  
+  #ai-summarize-window.dark-mode #summarize-header {
+    background: #2d2d2d;
+    border-bottom: 1px solid #404040;
+  }
+  
+  #ai-summarize-window.dark-mode #summarize-content {
+    background-color: #1a1a1a;
+  }
+  
+  #ai-summarize-window.dark-mode #summarize-controls-container {
+    background-color: #2d2d2d;
+    border-top: 1px solid #404040;
+  }
+  
+  #ai-summarize-window.dark-mode .model-dropdown {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #fff;
+  }
+
+  #ai-summarize-window.dark-mode #custom-prompt {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #fff;
+  }
+
+  #ai-summarize-window.dark-mode .summarize-option {
+    background-color: #2d2d2d;
+  }
+
+  #ai-summarize-window.dark-mode .summarize-option:hover {
+    background-color: #3d3d3d;
+  }
+
+  #ai-summarize-window.dark-mode .summarize-option.active {
+    background-color: #28a745;
+  }
+  
+  #ai-summarize-window.dark-mode #summarize-button {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  #ai-summarize-window.dark-mode #summarize-button:hover {
+    background-color: #218838;
+  }
+  
+  #ai-summarize-window.dark-mode .summarize-message {
+    background-color: #2d2d2d;
+    color: #fff;
+  }
+  
+  #ai-summarize-window.dark-mode .summarize-message.ai-message {
+    background-color: #1e3a5f;
+    color: #fff;
+  }
+
+  /* 요약창 헤더 버튼 스타일 추가 */
+  #expand-summarize, #close-summarize {
+    min-width: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #expand-summarize:hover, #close-summarize:hover {
+    color: #000;
+  }
+
+  #ai-summarize-window.dark-mode #summarize-button:hover {
+    background-color: #218838;
+  }
+  
+  #ai-summarize-window.dark-mode .summarize-message {
+    background-color: #2d2d2d;
+    color: #fff;
+  }
+  
+  #ai-summarize-window.dark-mode .summarize-message.ai-message {
+    background-color: #1e3a5f;
+    color: #fff;
+  }
+
+  /* 다크모드에서 요약창 헤더 버튼 스타일 추가 */
+  #ai-summarize-window.dark-mode #expand-summarize,
+  #ai-summarize-window.dark-mode #close-summarize {
+    color: #fff;
+  }
+  
+  #ai-summarize-window.dark-mode #expand-summarize:hover,
+  #ai-summarize-window.dark-mode #close-summarize:hover {
+    color: #ccc;
+  }
+</style><style id="image-preview-style">
+    .image-preview {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .delete-preview {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      padding: 0;
+    }
+    
+    .delete-preview:hover {
+      background: #cc0000;
+    }
+  </style></head>
+
+<body __processed_662dbac3-5af1-4892-b155-379e839e09a3__="true" bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWllZ29tY29uIiwiYWRibG9ja2VyU3RhdHVzIjp7IkRJU1BMQVkiOiJkaXNhYmxlZCIsIkZBQ0VCT09LIjoiZGlzYWJsZWQiLCJUV0lUVEVSIjoiZGlzYWJsZWQiLCJSRURESVQiOiJkaXNhYmxlZCIsIlBJTlRFUkVTVCI6ImRpc2FibGVkIiwiSU5TVEFHUkFNIjoiZGlzYWJsZWQiLCJUSUtUT0siOiJkaXNhYmxlZCIsIkxJTktFRElOIjoiZGlzYWJsZWQiLCJDT05GSUciOiJkaXNhYmxlZCJ9LCJ2ZXJzaW9uIjoiMi4wLjM1Iiwic2NvcmUiOjIwMDM1fV0=">
+
+<div class="cover" id="cover" bis_skin_checked="1">
+
+    <header class="head">
+      <a href="https://www.mql5.com/" class="head__logo" title="MQL5 - Language of trade strategies built-in the MetaTrader 5 client terminal"></a>
+        <div class="head__content" bis_skin_checked="1">
+          <nav class="main-menu" id="mainmenu">
+            
+                    <ul class="main-menu__top-level" id="menuTopLevel">
+                    <li><a href="https://www.mql5.com/en/forum" data-fz-event="MQL5+Menu+Forum">Forum</a></li>
+                    <li><a href="https://www.mql5.com/en/market" data-fz-event="MQL5+Menu+Market">Market</a></li>
+                    <li><a href="https://www.mql5.com/en/signals" data-fz-event="MQL5+Menu+Signals">Signals</a></li>
+                    <li><a href="https://www.mql5.com/en/job" data-fz-event="MQL5+Menu+Job">Freelance</a></li>
+                    <li><a href="https://www.mql5.com/en/vps" data-fz-event="MQL5+Menu+VPS">VPS</a></li>
+                    <li><a href="https://www.mql5.com/en/quotes/overview" data-fz-event="MQL5+Menu+Overview">Quotes</a></li>
+                  </ul><ul class="main-menu__second-level" id="menuSecondLevel">
+                    <li><a href="https://www.mql5.com/en/articles" data-fz-event="MQL5+Menu+Articles"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/icon-articles4.svg" alt="" width="16" height="16">Articles</a></li>
+                    <li><a href="https://www.mql5.com/en/code" data-fz-event="MQL5+Menu+CodeBase"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/icon-code4.svg" alt="" width="16" height="16">CodeBase</a></li>
+                    <li><a href="https://forge.mql5.io/?lang=en" target="_blank" rel="noopener" data-fz-event="MQL5+Menu+AlgoForge"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/icon-algoforge4.svg" alt="" width="16" height="16">Algo Forge</a></li>
+                    <li><a href="https://www.mql5.com/en/docs" data-fz-event="MQL5+Menu+Docs"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/icon-docs4.svg" alt="" width="16" height="16">Documentation</a></li>
+                    <li><a href="https://www.mql5.com/en/book" data-fz-event="MQL5+Menu+Book"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/icon-book4.svg" alt="" width="16" height="16">AlgoBook</a></li>
+                    <li><a href="https://www.mql5.com/en/neurobook" data-fz-event="MQL5+Menu+Neurobook"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/icon-neurobook4.svg" alt="" width="16" height="16">NeuroBook</a></li>
+                    <li><a href="https://www.mql5.com/en/economic-calendar" data-fz-event="MQL5+Menu+Economic+Calendar"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/icon-economic-calendar4.svg" alt="" width="16" height="16">Calendar</a></li>
+                    <li><a href="https://web.metatrader.app/terminal?mode=demo&amp;lang=en" target="_blank" rel="nofollow noopener" data-fz-event="MQL5+Menu+Trading"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/icon-trading4.svg" alt="" width="16" height="16">WebTerminal</a></li>
+                    <li class="main-menu__mobile"><a href="https://www.mql5.com/en/users/i.Andy">Profile</a></li>
+                    <li class="main-menu__mobile"><a href="https://www.mql5.com/en/about">About</a></li>
+                    <li class="main-menu__second-tools"><a rel="noopener" href="https://www.mql5.com/en/vps" title="Reliable trader hosting for uninterrupted operation of robots and instant copying of trades" class="button-mt" data-vars-fz="Start+VPS+Trial+Submenu"><img width="18" height="18" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/vpstrial2.svg" alt="" loading="lazy">Start VPS Trial</a></li>
+                    </ul>
+          </nav>
+            <div class="main-menu__active" bis_skin_checked="1">
+              <a id="mainMenuSelected" href="https://www.mql5.com/en/blogs/post/749585#">
+                Home
+              </a>
+            </div>
+<form action="https://www.mql5.com/en/search" onsubmit="return false;" autocomplete="off" id="headerSearchForm" class="header-search" method="post">
+<button type="button" id="headerSearchButton" title="Search" class="header-search__button"></button><div class="header-search__input" bis_skin_checked="1"><input name="keyword" type="text" enterkeyhint="search" title="Enter search text" placeholder="Search" id="headerSearchKeyword" autocomplete="off"><label for="headerSearchKeyword" class="header-search__placeholder">Type <span>/</span> to search:  @user, $symbol, ...</label><button id="headerSearchSubmit" class="header-search__submit"></button></div><button type="button" id="headerSearchClean" title="Close" class="header-search__clean"></button></form>          <input class="blurHandler" id="mainMenuBlurHandler" type="checkbox">
+        </div>
+        <div class="head__toolbar" id="headerToolbar" bis_skin_checked="1">
+            <div class="container notifications-toolbar" bis_skin_checked="1">
+              <nav>
+                <ul id="privateAreaMessages" class="notifications-box">
+                  <li class="notify-item notify-mobile"><a class="link-notify static link-notify_message-mobile" href="https://www.mql5.com/en/users/i.andy/messages" id="notifyMessagesMobile" title="Messages"><i class="notify-icon notify-icon_messages"></i></a></li>
+                  <li class="notify-item notify-total"><a class="link-notify link-notify_total" id="notify_total"><i class="notify-icon notify-icon_notify-total"></i></a>
+                  <ul class="notify-total__list" id="notifyTotalList">
+<li class="notify-item"><a href="https://www.mql5.com/en/users/i.andy/accounting" class="link-notify link-notify_wallet" title="Balance"><i class="notify-icon notify-icon_wallet"></i><span class="link-notify__text">6</span></a></li>
+<li class="notify-item notify-desktop"><a class="link-notify link-notify_message" href="https://www.mql5.com/en/users/i.andy/messages" id="notifyMessages" title="Messages"><i class="notify-icon notify-icon_messages"></i></a></li>
+<script type="application/json" id="dragAndDrop" data-type="translate">{
+  "zoomIn": "zoom in",
+  "zoomOut": "zoom out",
+  "dragAndDrop": "Upload",
+  "errorInvalidExtension": "Invalid extension",
+  "invalidImageSize": "Invalid image size",
+  "invalidImageType": "Invalid image format"
+}</script>
+<script type="application/json" id="lightBoxTranslates" data-type="translate">{
+  "lightBox": {
+    "collapse": "Collapse",
+    "showOriginal": "Show original",
+    "errorLoading": "Unable to download attachment",
+    "next": "Next",
+    "previous": "Previous",
+    "linkToImg": "Link to the image",
+    "linkToVideo": "Link to the video",
+    "save": "Save",
+    "close": "Close"
+  }
+}</script>
+    
+</ul></li>
+
+                </ul>
+              </nav>
+            </div>
+          <div class="container" bis_skin_checked="1">
+            <div class="toggle-button" id="sidebarToggleButton" bis_skin_checked="1">
+              <i></i>
+            </div>
+          </div>
+
+          <div class="group-menu" id="groupMenu" bis_skin_checked="1">
+              <div class="container profileToolbar" bis_skin_checked="1">
+                <nav>
+                  <ul id="profile" class="profile-box"><li class="userLinkContainer" id="userLinkContainer"><a href="https://www.mql5.com/en/users/i.andy/news" class="userlink" id="userlink" title=""><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/avatar_na2_micro.png" alt="" loading="lazy" width="29" height="29"><span class="firstname">i.Andy</span> <span class="lastname"></span></a><ul class="userLinkMenu user-link-menu" id="userLinkMenu">
+<li class="messages delimiter user-link-menu__item_with-counter user-link-menu__item"><a href="https://www.mql5.com/en/users/i.andy/messages"><span>Messages</span><span class="user-link-menu__counter" id="counterMessagesMenu"></span></a></li>
+<li class="news user-link-menu__item"><a href="https://www.mql5.com/en/users/i.andy/news"><span>News feed</span></a></li>
+<li class="profile user-link-menu__item_with-counter user-link-menu__item"><a href="https://www.mql5.com/en/users/i.andy"><span>Profile</span><span title="Friend requests" class="user-link-menu__counter" id="counterOfferedFriendMenu"></span></a></li>
+<li class="favorites user-link-menu__item"><a href="https://www.mql5.com/en/users/i.andy/favorites"><span>Favorites</span></a></li>
+<li class="topup delimiter user-link-menu__item"><a href="https://www.mql5.com/en/users/i.andy/accounting/topup"><span>Top up MQL5 Services</span></a></li>
+<li class="chooseout user-link-menu__item"><a href="https://www.mql5.com/en/users/i.andy/accounting/chooseout"><span>Withdraw from account</span></a></li>
+<li class="settings delimiter user-link-menu__item"><a href="https://www.mql5.com/en/users/i.andy/edit"><span>Settings</span></a></li>
+<li class="logout delimiter"><a href="https://www.mql5.com/en/auth_logout" onclick="doPost(event,&#39;/en/auth_logout&#39;,&#39;765e843b8641f63e200431c5382c11b8&#39;); return false;"><span>Logout</span></a></li>
+</ul></li></ul>
+                </nav>
+              </div>
+
+
+            <div class="container lang-menu-container" bis_skin_checked="1">
+              <div id="langMenuContainer" class="lang-menu" bis_skin_checked="1">
+                <input class="blurHandler" id="langmenuBlurHandler" type="checkbox">
+                <nav>
+                  <ul class="lang-menu__list" id="langmenu">
+                    <li class="lang-menu__list-item lang-menu__list-item_selected"><a href="https://www.mql5.com/en/blogs" aria-label="English (English)"><i class="icons-languages icons-languages_en"></i><span>English</span></a></li>
+<li class="lang-menu__list-item"><a href="https://www.mql5.com/ru/blogs" aria-label="Русский (Russian)"><i class="icons-languages icons-languages_ru"></i><span>Русский</span></a></li>
+<li class="lang-menu__list-item"><a href="https://www.mql5.com/zh/blogs" aria-label="中文 (Chinese)"><i class="icons-languages icons-languages_zh"></i><span>中文</span></a></li>
+<li class="lang-menu__list-item"><a href="https://www.mql5.com/es/blogs" aria-label="Español (Spanish)"><i class="icons-languages icons-languages_es"></i><span>Español</span></a></li>
+<li class="lang-menu__list-item"><a href="https://www.mql5.com/pt/blogs" aria-label="Português (Portuguese)"><i class="icons-languages icons-languages_pt"></i><span>Português</span></a></li>
+<li class="lang-menu__list-item"><a href="https://www.mql5.com/ja/blogs" aria-label="日本語 (Japanese)"><i class="icons-languages icons-languages_ja"></i><span>日本語</span></a></li>
+<li class="lang-menu__list-item"><a href="https://www.mql5.com/de/blogs" aria-label="Deutsch (German)"><i class="icons-languages icons-languages_de"></i><span>Deutsch</span></a></li>
+<li class="lang-menu__list-item"><a href="https://www.mql5.com/ko/blogs" aria-label="한국어 (Korean)"><i class="icons-languages icons-languages_ko"></i><span>한국어</span></a></li>
+<li class="lang-menu__list-item"><a href="https://www.mql5.com/fr/blogs" aria-label="Français (French)"><i class="icons-languages icons-languages_fr"></i><span>Français</span></a></li>
+<li class="lang-menu__list-item"><a href="https://www.mql5.com/it/blogs" aria-label="Italiano (Italian)"><i class="icons-languages icons-languages_it"></i><span>Italiano</span></a></li>
+<li class="lang-menu__list-item"><a href="https://www.mql5.com/tr/blogs" aria-label="Türkçe (Turkish)"><i class="icons-languages icons-languages_tr"></i><span>Türkçe</span></a></li>
+
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+    </header>
+
+  <main>
+<div id="bfogggabsofabcpxuzmgaibarmaxasdrj" class="re312oweqzd56mk75 gafbcy1un" bis_skin_checked="1"><a target="_blank" href="https://www.mql5.com/ff/go?link=https%3A%2F%2Ftrade.metatrader5.com%2Fterminal%3Futm_source%3Dwww.mql5.com%26utm_medium%3Ddisplay.800.80%26utm_term%3Dtrade.in.browser%26utm_content%3Dmt5.web.platform%26utm_campaign%3Dzh.0009.desktop.default&amp;a=flgwrtfdpmomzfftbfpfddqgkzbzalgf&amp;s=60d2622c7677deb85a0902fdf199b60979c463cc5358ce79ae230aeaa87bfba9&amp;v=1&amp;host=https%3A%2F%2Fwww.mql5.com%2Fff%2F&amp;id=bfogggabsofabcpxuzmgaibarmaxasdrj&amp;uid=pmmhswiglvgyeccfxzqdfpcudfpckdbc&amp;ssn=1765546762778729876&amp;ssn_dr=245&amp;ssn_sr=0&amp;fv_date=1735501842&amp;ref=https%3A%2F%2Fwww.mql5.com%2Fen%2Fblogs%2Fpost%2F749585&amp;title=Instructions%20for%20setting%20up%20and%20testing%20the%20AW%20Recovery%20Expert%20Advisor%20-%20My%20Trading%20-%2022%20June%202022%20-%20Traders%27%20Blogs&amp;scr_res=1920x1080&amp;hdpi=1&amp;ac=176554700705365374&amp;fz_uniq=5070361201397822742&amp;sv=2552" bis_size="{&quot;x&quot;:141,&quot;y&quot;:40,&quot;w&quot;:800,&quot;h&quot;:80,&quot;abs_x&quot;:141,&quot;abs_y&quot;:40}"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/xpp0jmdrbxpxwmxc2.gif" width="800" style="width: 800px; overflow: hidden; vertical-align: top; height: auto; border: 0px;" height="80" bis_size="{&quot;x&quot;:141,&quot;y&quot;:40,&quot;w&quot;:800,&quot;h&quot;:80,&quot;abs_x&quot;:141,&quot;abs_y&quot;:40}" bis_id="bn_j8u1viofxai55r40u2ikgv"></a></div>
+    <article class="body" id="bodyContent">
+      <header class="top-band">
+        
+    
+    <div class="path path__blogs" bis_skin_checked="1">
+      <div class="shortlinks" bis_skin_checked="1">
+          <span>
+            <a href="https://www.mql5.com/en/blogs" title="All Blogs"><span>All Blogs</span></a>
+          </span>
+          /
+          <span>
+            <a href="https://www.mql5.com/en/blogs/trading" title="My Trading"><span>My Trading</span></a>
+          </span>
+      </div>
+    </div>
+      <div class="actions separated" bis_skin_checked="1">
+        <ul>
+            <li><a href="javascript:complaintInline(749585,6,0,0)">complain</a></li>
+        </ul>
+      </div>
+  <div style="clear:both;" bis_skin_checked="1"></div>
+
+      </header>
+
+      
+
+
+<div class="blogs" bis_skin_checked="1">
+  <div id="left-panel" class="left-panel left-panel_270  column left" bis_skin_checked="1">
+    
+<div class="treeReadWrapper treeReadWrapper_blogs" bis_skin_checked="1">
+  <ul class="treeMenuRoot"><li><a href="https://www.mql5.com/en/blogs" class="blogsCategory"><span class="inLink"><i></i>All Blogs</span></a></li></ul>
+<ul class="treeMenuRoot blogs"><li><a href="https://www.mql5.com/en/blogs/analytics" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -48px"></i>Analytics &amp; Forecasts</span></a><ul class="treeMenuRoot nodelim"><li><a href="https://www.mql5.com/en/blogs/analytics/trends" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -48px"></i>Weekly Trends</span></a></li><li><a href="https://www.mql5.com/en/blogs/analytics/forecasts" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -48px"></i>Forecasts</span></a></li><li><a href="https://www.mql5.com/en/blogs/analytics/trading-systems" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -48px"></i>Trading Systems</span></a></li></ul></li><li class="selected"><a href="https://www.mql5.com/en/blogs/trading" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -64px"></i>My Trading</span></a><ul class="treeMenuRoot nodelim"><li><a href="https://www.mql5.com/en/blogs/trading/charts" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -64px"></i>Charts</span></a></li><li><a href="https://www.mql5.com/en/blogs/trading/strategies" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -64px"></i>Trading Strategies</span></a></li><li><a href="https://www.mql5.com/en/blogs/trading/statistics" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -64px"></i>Statistics</span></a></li></ul></li><li><a href="https://www.mql5.com/en/blogs/ideas" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -80px"></i>Trading Ideas</span></a><ul class="treeMenuRoot nodelim"><li><a href="https://www.mql5.com/en/blogs/ideas/scalping" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -80px"></i>Scalping</span></a></li><li><a href="https://www.mql5.com/en/blogs/ideas/neural-networks" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -80px"></i>Neural Networks</span></a></li><li><a href="https://www.mql5.com/en/blogs/ideas/wave-count" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -80px"></i>Wave Count</span></a></li></ul></li><li><a href="https://www.mql5.com/en/blogs/markets" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -16px"></i>Market News</span></a><ul class="treeMenuRoot nodelim"><li><a href="https://www.mql5.com/en/blogs/markets/currency" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -16px"></i>Currency</span></a></li><li><a href="https://www.mql5.com/en/blogs/markets/metals" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -16px"></i>Metals</span></a></li><li><a href="https://www.mql5.com/en/blogs/markets/crude-oil" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -16px"></i>Crude Oil</span></a></li></ul></li><li><a href="https://www.mql5.com/en/blogs/companies" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -32px"></i>Company News</span></a><ul class="treeMenuRoot nodelim"><li><a href="https://www.mql5.com/en/blogs/companies/events" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -32px"></i>Events</span></a></li><li><a href="https://www.mql5.com/en/blogs/companies/banks" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -32px"></i>Banks</span></a></li><li><a href="https://www.mql5.com/en/blogs/companies/brokers" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -32px"></i>Brokers</span></a></li><li><a href="https://www.mql5.com/en/blogs/companies/law" class="blogsCategory"><span class="inLink"><i style="background-position: 0 -32px"></i>Law/Regulations</span></a></li></ul></li><li><a href="https://www.mql5.com/en/blogs/other" class="blogsCategory"><span class="inLink"><i style="background-position: 0 0px"></i>Other</span></a></li></ul>
+
+    <ul class="treeMenuRoot">
+      <li><a class="blogCategory my" href="https://www.mql5.com/en/blogs/my/published"><span class="inLink">My posts</span></a></li>
+      <li><a class="blogCategory drafts" href="https://www.mql5.com/en/blogs/my/drafts"><span class="inLink">Drafts</span></a></li>
+      <li><a class="blogCategory scheduled" href="https://www.mql5.com/en/blogs/my/scheduled"><span class="inLink">Schedule Posts</span></a></li>
+    </ul>
+
+    <ul class="treeMenuRoot">
+      <li><a class="blogCategory terms" href="https://www.mql5.com/en/blogs/terms" target="_blank"><span class="inLink">Rules</span></a></li>
+    </ul>
+</div>
+
+  </div>
+    
+  <div class="column center" bis_skin_checked="1">
+    <div class="postContent view" bis_skin_checked="1">
+      <div class="postHead" bis_skin_checked="1">
+            <div class="blur" style="height: 248px" bis_skin_checked="1">
+              <div style="background-image: url(https://c.mql5.com/6/907/splash-749585-1655919955.png);" class="left" bis_skin_checked="1"></div>
+              <div style="background-image: url(https://c.mql5.com/6/907/splash-749585-1655919955.png);" class="right" bis_skin_checked="1"></div>
+            </div>
+            <div class="splash" style="height: 248px; max-width: 1328px;" bis_skin_checked="1">
+              <img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/splash-749585-1655919955.png" loading="lazy" height="248" width="1328" title="Instructions for setting up and testing the AW Recovery Expert Advisor" alt="Instructions for setting up and testing the AW Recovery Expert Advisor" style="position: absolute; left: 50%; margin-left: -664px; margin-right: -664px;">
+              <i class="border left"></i>
+              <i class="border right"></i>
+              <div class="caption" style="position: relative" bis_skin_checked="1">
+                <div class="category" bis_skin_checked="1"><a href="https://www.mql5.com/en/blogs/trading">My Trading</a></div>
+                <h1>Instructions for setting up and testing the AW Recovery Expert Advisor</h1>
+                <div class="date" bis_skin_checked="1">22 June 2022, 17:46</div>
+              </div>
+            </div>
+        <div class="avatar" bis_skin_checked="1">
+          <img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/6532960b-f75b.png" title="AW Trading Software Limited" alt="AW Trading Software Limited" loading="lazy" width="60" height="60">
+        </div>
+          <div class="author" bis_skin_checked="1">
+            <a class="author" href="https://www.mql5.com/en/users/nechaevrealle">Alexander Nechaev</a>
+          </div>
+        <div class="counters" bis_skin_checked="1">
+          <div class="commentsCounter" title="Comments" bis_skin_checked="1">9<i class="icon comments"></i></div>
+          <div class="viewsCounter" title="Views" bis_skin_checked="1"><i class="icon views"></i>18 939</div>
+        </div>
+      </div>
+      <div class="container" bis_skin_checked="1">
+        <div class="content" bis_skin_checked="1">
+          <p><span>The Expert Advisor is a system designed to recover unprofitable positions.</span><span><span>&nbsp;</span>The author's algorithm locks a losing position, splits it into many separate parts, and closes each of them separately.<span>It is the use of closing losses in parts that allows you to reduce losses with a lower deposit load, which ensures safer work with losses, in contrast to grid strategies that close orders only in whole groups.</span></span></p> <p><span><span><b>AW Recovery<span>&nbsp;</span></b><span>is not a multi-currency advisor. To work with different tools, launch AW Recovery in different windows on each of the required tools&nbsp;</span><b><b>AW Recovery</b></b><span><span>&nbsp;</span>works on any instruments (currencies, indices, oil, metals, stocks).</span></span></span><br></p> <p>In this article, you will find information about what the product strategy is, how to set it up correctly, and how to test drawdown.</p> <div class="fquote" bis_skin_checked="1"> <p style="text-align:center;"><i><b><span style="color:rgb(0, 87, 174);">Note!</span>&nbsp;</b>And information that will not be covered in this article, but prepared elsewhere:</i></p> <p style="text-align:center;">A complete list of input settings with a description of each of them is located here: <span><a href="https://www.mql5.com/en/blogs/post/749512">https://www.mql5.com/en/blogs/post/749512</a></span></p> <p style="text-align:center;">Description of the EA panels with comments on each part of all three panels can be found here: <span><a href="https://www.mql5.com/en/blogs/post/750270">https://www.mql5.com/en/blogs/post/750270</a></span></p> </div> <div bis_skin_checked="1"> <p><br></p> <h3><span style="color:rgb(0, 87, 174);">The article contains the following sections:</span><br></h3> <p></p> <ol> <li>Drawdown testing</li> <li>The main strategy of the adviser.</li> <li>Exit standby mode.</li> <li>Automatic locking.</li> <li>Disabling other advisors.&nbsp;<span>Launch adjustment.</span></li> <li>Recommendations for setting.</li> <li>trend filters.</li> <li>The current group of orders. Calculation of commissions.<br></li> <li>Notification settings.<br></li> <li>Identifiers and their change.</li> </ol> <div bis_skin_checked="1"> <p><br></p> </div> <p></p> <p></p> </div> <div class="atten" bis_skin_checked="1"> <h3> <p>1. Testing the drawdown.</p></h3> </div> <p>Always test any settings before launching on a live account.<span>&nbsp;</span></p> <p><br></p> <p><span><b><span style="color:rgb(0, 87, 174);">Tester:&nbsp;</span></b></span>For testing, run the EA in the strategy tester in the mode&nbsp;<b>"Visualisation".</b></p> <p style="text-align:center;"> <img width="1121" height="339" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/i37te6_fj6mhb_2022-06-21_t_10.50.51.png" loading="lazy" alt=""><br></p> <p>If there is no this checkbox in the settings window of the tester, then try to stretch the window in height, the fact is that "<b>Visualisation"&nbsp;</b>hidden when the window is shrunk.</p> <p><br></p> <p><b><span style="color:rgb(0, 87, 174);">Volumes:</span>&nbsp;</b>To test a specific drawdown, you should select a deposit volume similar to the one you plan to recover.&nbsp;</p> <p style="text-align:center;"> <img width="1127" height="543" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/sfgrg8_oj71bz_2022-06-21_q_10.51.08.png" loading="lazy" alt=""><br></p> <p><br></p> <p>In the "<b>Type of the launch</b>" variable, select the drawdown mode, and specify its value in the "<b>Drawdown in percentage or in money to run"&nbsp;</b>variable. Now, during testing, the Expert Advisor will not start working until the specified drawdown is reached. Or launch the Expert Advisor in "<b>Instant Launch"&nbsp;</b>mode and use the "S<b>top Recovery"&nbsp;</b>button on the adviser panel to set the required position volume before starting the adviser.<br></p> <p style="text-align:center;"><br></p> <p><b><span style="color:rgb(0, 87, 174);">Drawdown launch:&nbsp;</span></b>In the input settings, you must select "<b><b>Drawdown in percentage or in money to Launch"&nbsp;</b></b>and specify the amount of drawdown, upon reaching which the EA will start recovery.</p> <ul> <li><span></span>It is better to use a drawdown volume for testing that is either equal to or slightly larger than your actual drawdown.<span>&nbsp;</span></li> </ul> <p><b><span style="color:rgb(0, 87, 174);">How to get the required drawdown level for testing:&nbsp;</span></b></p> <p>Start testing in the strategy tester. After that, click on the pause on the advisor panel ("<b>Stop Recovery"&nbsp;</b>button). Then, using the panel located at the bottom right, open orders with a volume equal to your actual situation (in lots). Disable pause on the main panel.&nbsp;<b>AW Recovery&nbsp;</b>will start recovery after the drawdown size specified in the input settings is reached.<span>&nbsp;</span></p> <p style="text-align:center;"> <img width="547" height="797" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/tester.png" loading="lazy" alt="" style="vertical-align:middle;"><br></p> <p>This way you can test a specific situation and check your settings.<span>&nbsp;</span></p> <div class="fquote" bis_skin_checked="1"> <p><b><span><i></i></span></b></p> <p><b><span><i><span style="color:rgb(0, 87, 174);">Briefly about testing:</span></i></span></b></p> <p><i>Start the mode in the tester&nbsp;</i><b><i>"Visualisations"</i></b><i>, then press pause on the Expert Advisor panel (button&nbsp;</i><span>"</span><b>Stop recovery"</b><i>).</i><br></p> <p><i>Using the panel, open the required volume of orders.</i></p> <p><i>Now continue to work again click on the button "<b>Stop recovery"&nbsp;</b>to start the recovery process.</i></p> <p><i></i></p> </div> <p><br></p> <div class="atten" bis_skin_checked="1"> <h3>2. The main strategy of the adviser.</h3> </div> <p><b>AW Recovery EA&nbsp;</b><b>locks*&nbsp;</b>position so that the loss cannot grow.&nbsp;<span>First of all, the adviser looks for profitable trades and reduces some of the losing orders at their expense. If this does not allow to level the position, the&nbsp;</span>EA will open additional locking orders so that the number of BUY lots is equal to the number of SELL lots. In this situation, no matter where the market trend goes, the size of the loss will not increase.<span>&nbsp;</span></p> <p>When the position is locked, the EA starts to open<span>&nbsp;</span><b>averaging orders*</b>, the profit from these orders is used to recover part of the loss.</p> <p><span>After the position is fixed, the adviser virtually splits the unprofitable position into separate small parts.&nbsp;<span>Each&nbsp;</span></span>small part is closed separately, this is called&nbsp;<b>partial closure*</b>, with such closure, the deposit is loaded less and the recovery process becomes the safest.<span>&nbsp;</span><i><b>Locking</b>&nbsp;is the alignment of orders of the Buy and Sell types by volume. Locking is used to fix a loss in the current position, if the volumes are the same, then when the price changes, the loss will remain the same. If there is a locked position, the increase in loss is due to the accrual of swaps by the broker, this should be taken into account when calculating risks.</i></p> <div class="fquote" bis_skin_checked="1"> <ul> <li><i><b>Locking</b>&nbsp;</i><i>is the alignment of orders of the Buy and Sell types by volume. Locking is used to fix a loss in the current position, if the volumes are the same, then when the price changes, the loss will remain the same. If there is a locked position, the increase in loss is due to the accrual of swaps by the broker, this should be taken into account when calculating risks.</i></li> <li><i><b>Averaging orders</b>&nbsp;are orders that the EA opens in order to use their profit to recover a losing position. Averaging orders can also be opened manually using the Expert Advisor panel.</i></li> <li><i><b>Partial closing</b>&nbsp;- when closing, the EA does not close orders entirely. That is, if there is an order with a large volume, the EA will virtually divide it into small parts and will not close the entire volume at once, but will close the order in parts. For example, an order of 1.00 lots can be closed in parts of 0.10 lots or, for example, 0.05 lots.</i></li> </ul> </div> <p><span><b><span style="color:rgb(0, 87, 174);">Opening orders:</span></b></span></p> <p>The EA opens the first averaging order. Averaging orders can generate a temporary additional loss, since the EA uses a grid strategy when opening averaging orders. A new averaging order will be opened by the EA if the previous one is at a loss.<span>&nbsp;</span></p> <p>The EA opens averaging orders with a distance equal to&nbsp;<b>"Step for average"</b>, can be multiplied with a variable&nbsp;<b>"Multiplier to step"</b>. This distance between orders will be applied when working without a trend filter (for more details, see section 7. Trend filters).</p> <p>The first averaging order is equal to&nbsp;<b>"Volume of average order"</b>,<span>&nbsp;</span>the following averaging orders will differ by a factor&nbsp;<b>"Multiplier to volume".&nbsp;</b>The trader can choose the type of orders that the EA can use, which is important for working with the trend.</p> <p>Also, the EA has a built-in ability to work simultaneously in both directions, it is regulated by the variable&nbsp;<b>"Multidirectional trading"</b>.&nbsp;<span>That is, if there are already open averaging orders, the adviser will be able to trade in the direction of the current trend, and not just against it.</span></p> <p>Depending on the aggressiveness of the trader, the possibility of opening more than one order per candle can be adjusted using the variable&nbsp;<b>"One Opened Order per Bar filtering"</b>. The EA can open new averaging orders, as soon as the signal for opening occurs, more averaging orders will be opened. Or for safer work, the EA can only open one order of one direction per candle. Thus, the number of orders will be limited, this option is safer in case of sharp price fluctuations.</p> <div class="fquote" bis_skin_checked="1"> <p><b><span><i></i></span></b></p> <p><b><span><i><span style="color:rgb(0, 87, 174);">How is the direction for the first order determined?</span></i></span></b></p> <p><i></i></p> <p><i>If trading in both directions is disabled, then orders will be opened towards the center of the position (the middle of the losing position between the farthest and closest orders) to return to the average value.</i></p> <p><i>If two-way trading is allowed in the input settings and no trend filter is applied: then the EA will independently determine in which direction to open the first restoring order based on the BullsBears Candles Filtering signal. Further after this, orders will be opened according to the step conditions.</i></p> <p><i>Opening the first order in the opposite direction will also be regulated by this filter. That is, the two directions work separately from each other and do not interact when opened.</i></p> <p><i></i></p> <p><i></i></p> </div> <ul></ul> <p><br></p> <p><span><b><span style="color:rgb(0, 87, 174);">Closing orders:</span></b></span></p> <p></p> <p>Averaging orders are opened with a small volume, after the profit on these orders exceeds the closing part, the closing will occur.<span>&nbsp;</span></p> <p><span>The EA performs partial closing of orders in order to recover the loss.<span>Profit from averaging orders covers part of the unprofitable position.</span></span>Closing of a losing position occurs in parts. At the same time, the adviser perceives a losing position as a single structure.</p> <div class="fquote" bis_skin_checked="1"> <p><i><span><b><span style="color:rgb(0, 87, 174);">For example:&nbsp;</span></b></span></i><i>A losing position with a volume of 1 lot. When launched, the EA locks the position, virtually splits it into several parts and closes each of them separately.&nbsp;&nbsp;</i></p> <p><i>That is, an order with a volume of 1 lot can be divided into 10 parts with a volume of 0.10, each of which will be closed separately.<span>&nbsp;</span><span>&nbsp;</span></i></p> <p><i>Partial closing allows you to consume less deposit resources, leaves more free funds and does not need to open large volumes. It is due to the partial closure of a losing position that the process of recovering losses can occur more safely and stably.</i></p> <p><i></i></p> <p><i></i></p> </div> <p><br></p> <p><b><span style="color:rgb(0, 87, 174);">Closing Overlap:</span></b></p> <p></p> <p>The EA includes an intelligent system for closing averaging orders. In this algorithm, the basket of averaging orders may not close completely, as it usually does. Only the very first and the very last of the averaging orders of the same direction are closed. This is done in order to load the deposit less. Since with each closing of averaging orders, a part of the unprofitable order is also closed. It is used if there is no need to close the entire basket, so the EA can close only the part that will reduce the total volume of the basket of averaging orders and reduce the part of the unprofitable position.<span><span>&nbsp;</span>When closing the last part of a position, the EA does not use this function.</span></p> <p>You can adjust this in the input settings using the variable<span>&nbsp;</span><b>"Allow overlap after number of orders"</b><span>enter the value after which this function will be active.<span>&nbsp;</span></span><span>The use of additional TakeProfit for the first and last orders will be available after the number of restoring orders of the same type reaches the specified number.</span><span><span>&nbsp;</span></span><span>This function is used by the EA only in those cases when a losing position has several stages of partial closure left.</span></p> <p><span></span></p> <div class="fquote" bis_skin_checked="1"> <p><i><b><span></span></b><i><b><span style="color:rgb(0, 87, 174);">For example:&nbsp;</span></b> <i>If in a variable<span>&nbsp;</span><b>"Allow overlap after number of orders"<span>&nbsp;</span></b>set to "3", then in the case of a grid of more than 3 orders, the adviser will not close all orders at once, but will close only the very first one that it opened and the last one. The remaining orders will be closed later when the next averaging orders are opened. In addition to averaging orders, the adviser will close part of the losing position.</i></i></i></p> </div> <p><br></p> <p><b><span style="color:rgb(0, 87, 174);">TakeProfit for the whole basket:</span></b></p> <p><b>AW Recovery</b><span>&nbsp;</span>calculates the profit from all orders with which it interacts (completely the entire losing position, all locking orders, all averaging orders in both directions). In the case when the entire total profit reaches the value specified by the trader, the entire basket will be closed and restored completed. Such work can be especially relevant during sharp news market movements, or when<span>&nbsp;</span><b>AW Recovery</b><span>&nbsp;</span>is used as a trading panel.</p> <p>The EA will close the entire basket of orders if it is in profit, by the value specified by the trader in money. The adjustment consists of two variables:</p> <p><b>Use TP for total basket if possible</b><span>&nbsp;</span>- Allow the use of TakeProfit in the deposit currency for the entire position, including restoring orders. When the variable is enabled, you must set a value for TakeProfit in the variable "<b>TP for total basket in money</b>".</p> <p><b>TP for total basket in money</b><span>&nbsp;</span>- Adjustment of the profit volume from all orders (blocked position, averaging orders together), upon reaching which the entire position will be closed. Close all if the total profit reaches the specified amount in money. The variable is active only if the value in the variable "<b>Use TP for total basket if possible</b>" is set to<span>&nbsp;</span><b>"ON".</b></p> <p><br></p> <div class="atten" bis_skin_checked="1"> <h3> <p>3. Exit standby mode.</p></h3> </div> <p>When the EA leaves the standby mode, or starts in the "<b>Instant Start</b>" mode, it performs a certain amount of operations.<span>Here is a list of these actions:</span></p> <p><b> <u></u></b></p> <p><br></p> <p><b><span style="color:rgb(0, 87, 174);"> Disabling other advisors.</span></b></p> <p>At the start of work, the first check that the<span>&nbsp;</span><b>AW Recovery </b>is a function to disable other Expert Advisors. It is controlled by the "<b><b>Disable other EAs at Launch</b></b>" variable.</p> <p>Disabling other advisers is necessary in order to avoid conflict between orders. The Expert Advisor can disable all Expert Advisors from the same symbol or from all symbols in general, which is important when using multi-currency algorithms. This was done in order to disable Expert Advisors attached to these windows. This feature is useful when starting&nbsp;<b>AW Recovery&nbsp;</b>in standby mode with another advisor on the VPS.</p> <p>The function makes it easier to comply with one of the most important conditions - when automatic locking is enabled, it is necessary to disable the Expert Advisor that is planned to be restored.<br></p> <p style="text-align:center;"> <img width="1127" height="503" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/pi4w91_xofmfd_2022-06-21_s_10.51.52.png" loading="lazy" alt=""><br></p> <p><br></p> <p><b><span style="color:rgb(0, 87, 174);"> Deleting pending orders, TP and SL, as well as closing profitable orders.</span></b></p> <p>One of the actions relevant for position management is to remove pending orders, TakeProfit and StopLoss levels. These actions are used to ensure that the position that is aligned to the lock does not decrease or increase in volume, that is, that orders are processed only by the&nbsp;<b>AW Recovery</b>.</p> <p>At the discretion of the trader, these features can be disabled,</p> <p>When running the "<b>Delete Pending Orders at Launch"&nbsp;</b>variable, the EA will delete all pending orders whose IDs refer to the ID of the position being processed at startup.</p> <p>When turned on<b>&nbsp;</b>variable&nbsp;<b>"Close profit at Launch"</b><span><span>&nbsp;</span></span><span>the adviser will start its work by closing all profitable orders being processed and, using the released profit, will close unprofitable orders.</span></p> <p>When using a variable&nbsp;<b>"Delete SL and TP"&nbsp;</b><span>when launched, the EA will delete all TakeProfit, StopLoss set manually or by other algorithms, whose identifiers refer to the identifier of the position being processed.</span></p><br> <p>The variables that govern the above settings are marked in the image below.</p> <p style="text-align:center;"> <img width="1134" height="504" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/2grmn6_olpsvf_2022-06-21_l_10.52.11.png" loading="lazy" alt=""><br></p> <div class="fquote" bis_skin_checked="1"> <p><i><span><b></b></span></i></p> <p><span><b><span style="color:rgb(0, 87, 174);">Note!&nbsp;</span></b></span><i>All actions described in this section adviser&nbsp;</i><b>AW Recovery</b><i>&nbsp;commits at the moment of&nbsp;initialisation, only once.</i></p> <p><i>If after&nbsp;<b>AW Recovery</b>&nbsp;<span>finished recovering a losing position, you want it to continue working in the mode of waiting for a new drawdown, then&nbsp;<b>AW Recovery</b>needs to be restarted.</span>&nbsp;If not restart&nbsp;<b>AW Recovery,</b>&nbsp;then when exiting the standby mode&nbsp;<b><b>AW Recovery</b></b>&nbsp;will not perform the actions described in this section (disabling other windows, deleting pending orders, etc.) since these actions are performed only once. These actions apply to global variables.</i></p> <p><i></i></p> </div> <p><b>&nbsp;</b></p> <div class="atten" bis_skin_checked="1"> <h3> <p>4. Automatic locking.<br></p></h3> </div> <p>Locking as such is the alignment of a position into a lock. That is, the EA equalizes the volumes of orders of the OP_BUY and OP_SELL types. This is done so that the position is fixed in the current position and its loss does not increase due to price movements. Enabling automatic locking occurs in the input settings of the adviser, the variable "<b>Use locking</b><b></b>". In the event that locking is enabled, the EA will lock all orders that it can process except for averaging ones. Thus, the loss will be fixed in the current position automatically.</p> <p><span>Automatic locking is valid throughout the entire time of the adviser, that is, in cases where it cannot be actively closed manually or manually opened additional orders, the locking algorithm will work.</span></p> <p>A locking order can sometimes have a large volume - this is normal, it happens if you have a large difference between the volumes of Buy and Sell orders.<span>&nbsp;</span></p> <p style="text-align:center;"> <img width="1134" height="504" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/5lwcwa_tvpeho_2022-06-22_u_12.35.53.png" loading="lazy" alt=""><br></p> <div class="fquote" bis_skin_checked="1"> <p><span><b><i><span style="color:rgb(0, 87, 174);">When should locking be disabled?</span></i></b></span></p> <ul> <li><i>If you want to add or close orders manually, you should disable the locking function.</i></li> </ul> <ul> <li><i>Parallel operation with other algorithms is possible only when automatic locking is disabled.</i></li> </ul> <ul> <li><i>Locking is relevant when the orders being processed are not affected from the outside and it is possible to enable&nbsp;<b>AW Recovery&nbsp;</b>single-handedly manage the position.</i></li> </ul> </div> <p style="text-align:center;"> <img width="1134" height="504" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/npqip3_ue6hoq_2022-06-22_7_12.39.07.png" loading="lazy" alt=""><br></p> <div class="fquote" bis_skin_checked="1"> <p><i><b><span></span></b></i></p> <p><i><b><span style="color:rgb(0, 87, 174);">Note!</span></b><span><span>&nbsp;</span>If running<span>&nbsp;</span></span><b>A</b></i><i><b>W Recovery</b>&nbsp;on the VPS, then you should disable the version that runs on the terminal of your computer so that two&nbsp;<b>AW Recovery&nbsp;</b>could not come into conflict with each other.</i></p> </div> <p><br></p> <div class="atten" bis_skin_checked="1"> <h3> <p><span>5. Disabling other advisers.<span><span>&nbsp;</span>Launch adjustment.</span></span><br></p></h3> </div> <p><b><span style="color:rgb(0, 87, 174);">When can I use AW Recovery with another Expert Advisor:</span></b></p> <p></p> <ul> <li>If locking is disabled, you can use AW Recovery together with other Expert Advisors.</li> <li>If the Expert Advisors have different MagicNumber or&nbsp;<b>AW Recovery&nbsp;</b>does not restore orders processed by other Expert Advisors - you can also use them together.</li> </ul> <p></p> <p><span style="color:rgb(0, 87, 174);"><b>When you cannot use AW Recovery</b><b>with another Expert Advisor:</b></span></p> <p></p> <ul> <li>In cases where permanent auto-locking is enabled, it is necessary to disable other advisers,</li> <li>You also need to make sure that AW Recovery only works from one location at a time.</li> </ul> <p></p> <p><span style="color:rgb(0, 87, 174);"><b>How AW Recovery&nbsp;</b><b>disables other Expert Advisors:</b></span></p> <p>it is better to turn off other advisers during operation&nbsp;<b>AW Recovery.</b></p> <p>AW Recovery starts by disabling other windows. If this feature is enabled, then&nbsp;<b>AW Recovery&nbsp;</b>will begin to make trading operations only after the stage of closing other windows has passed. If you have enabled the Expert Advisor without this function active, and in the course of work you reconfigured and enable this function, then closing other Expert Advisors may not work.</p> <p>To do this, in the variable "<b>Disable other EAs at Launch</b>" you can select three options:</p> <ul> <li><span></span>Do not disable other advisors -&nbsp;<b>AW Recovery&nbsp;</b>will not disable other windows.<span>&nbsp;</span></li> <li><span></span>Disable advisors on the same Symbol -&nbsp;<b>AW Recovery&nbsp;</b>will disable all Expert Advisors on the current symbol, you will be able to continue working with other Expert Advisors on other symbols.</li> <li><span></span>Disable advisors on all Symbols - When this variable is selected&nbsp;<b>AW Recovery&nbsp;</b>will disable all windows on all symbols, but will only work on the current symbol.</li> </ul> <div bis_skin_checked="1"> <p><b><span>How to start AW Recovery to work when the specified landing is reached:</span></b></p> <p>To adjust the start time<span>&nbsp;</span><b>AW Recovery<span>&nbsp;</span></b><span>y</span>ou need to select a tuning block<span>&nbsp;</span><b>"LAUNCH SETTINGS"</b>. In this block, options for launching <b>AW Recovery</b> are configured.<span>&nbsp;</span><span>&nbsp;</span></p> <p>1) In a variable<span>&nbsp;</span><b>Type of launch</b><span>&nbsp;</span>you can choose:</p> <p></p> <ul> <li><b>"Instant start"</b><span>&nbsp;</span>- Start at the moment the adviser is turned on, that is<span>&nbsp;</span><b>AW Recovery</b><span>&nbsp;</span>will start working as soon as a losing order appears.</li> <li><b>"Start at drawdown percent"</b><span>&nbsp;</span>- Start when the drawdown is reached in percent.<span>&nbsp;</span><b>AW Recovery</b><span>&nbsp;</span>will analyze orders from the moment of initialization, but will start working only when the drawdown reaches a certain percentage of the deposit volume.</li> <li><b>"Start at drawdown in money"</b><span>&nbsp;</span>- Start upon reaching drawdown in money.<span>&nbsp;</span><b>AW Recovery</b><span>&nbsp;</span>will be able to start working when the drawdown reaches a certain amount in the currency of the trader's deposit.</li> </ul> <p></p> <p>2) Then enter the drawdown value in the variable<span>&nbsp;</span><b>"Drawdown percentage or money to Launch"</b></p> <p>3) After that, choose which actions<span>&nbsp;</span><b>AW Recovery</b><span>&nbsp;</span>must commit with your other advisors at the start. In a variable<span>&nbsp;</span><b>"Disable other EAs at Launch"</b><span>&nbsp;</span>choose one of these options:</p> <p>"Do not disable other advisors", "Disable advisors on same Symbol","Disable advisors on all Symbols".</p> <p>I recommend disabling other Expert Advisors on the symbol where AW Recovery is running so that there are no conflicts between Expert Advisors.</p><br> </div> <div class="atten" bis_skin_checked="1"> <h3> <p>6. Recommendations for tuning.</p></h3> </div> <p><span><b><span style="color:rgb(0, 87, 174);">Setting the part to close:</span></b></span></p> <p>Adjusted by the variable "<b>Part to close from a loss-making position</b>". The individual setting of this variable is very important as it is the part of the<span>loss that will be covered from orders of each type when the position is partially closed.<span>Determines what volume will be closed using profit from restoring orders.</span></span></p> <p><span>For better performance of the Expert Advisor, the variable&nbsp;<span>"</span><b>Part to close from a loss-making position</b><span>"&nbsp;</span>must be smaller than</span><span>&nbsp;</span><b>"</b><b>Volume of average order"</b><span>, this is important to increase the probability that the profit from one restoring order will be greater than the loss of the closed part of the position.</span></p> <p><span></span></p> <div class="fquote" bis_skin_checked="1"> <p><i></i></p> <p><i>When determining the volume of the part to close the order, one should take into account the volume of the far unprofitable order, as the most difficult to close.</i></p> <p><b><i><span style="color:rgb(0, 87, 174);">For correct operation at an average risk level, it is desirable to virtually divide a losing order into approximately 6-8 parts.</span></i></b></p> <p><i>That is, if a far order has a volume of 1 lot, then the part to close can be from 0.16 lots to 0.12 lots. In some cases, this number can be changed in one direction or another.</i></p> <p><i></i></p> </div> <div class="atten" bis_skin_checked="1"> <p><b>"</b><b>Part to close from a loss-making position</b><b>" = volume of the far loss-making order / 6 or 8.</b></p> </div> <p>In order to find a long-term losing order, you need to look at the current price and then find which of the losing orders is farthest from the current price (on the chart). Apply the volume of the farthest order for calculations.</p> <p>That is, you need to find an order whose opening price is as far as possible from the current price (the highest price for buy orders and the lowest price for sell orders).</p> <p><br></p> <p><b><span style="color:rgb(0, 87, 174);">Setting volumes of averaging orders:</span></b></p> <p><span>Adjusted by variable</span><b><span>&nbsp;</span>"<b>Volume of average order</b>"</b><span>, additionally, you can use the dynamic multiplier of volumes of averaging orders, regulated by the variable<span>&nbsp;</span></span><b>"</b><b><b>Multiplier to volume</b>"</b><span>.</span></p> <p>The volume of the first averaging order must be greater than the closing part. I recommend an average ratio of 1:1.5. This parameter may change based on available volumes, distance and current volatility. You can check different odds in the strategy tester and see what level of aggressiveness is right for you.</p> <div class="atten" bis_skin_checked="1"> <p><b>"</b><b>Volume of average order</b><b>" =&nbsp;</b><b>"Part to close from a loss-making position" * 1.5.</b></p> </div> <p></p> <p><br>When using the variable&nbsp;<b>"Multiplier to volume"<span>&nbsp;</span></b><span>Each subsequent restoring order in the grid of orders will be larger than the previous one by this coefficient. When using a small volume of orders (for example, 0.01) and a small volume of the multiplication factor, the system also takes into account the number of orders, which allows high-quality multiplication when it is impossible to increase orders after basic normalization. It is undesirable to use values less than "1" without having a good knowledge of the operation of pyramiding order processing systems.</span></p> <p></p> <div class="fquote" bis_skin_checked="1"> <p><i><b><span style="color:rgb(0, 87, 174);">For example:</span> "Volume of average order"&nbsp;</b>= 0.01&nbsp;<b>"Multiplier to volume"&nbsp;</b>= 1.3.</i></p> <p><i>0.01 * 1.3 = 0.013 - This value is invalid for the terminal, since the minimum value is 0.01 (only two decimal places are allowed). This means that after the first order, the second order of the same direction will open with a volume of 0.01, while the EA takes into account its real volume for multiplication.</i></p> <p><i>Further, the calculation of the third order will be 0.013 * 1.3 = 0.0169; according to the rules of mathematical rounding, the volume of the third order in the basket of similar orders will be 0.02.</i></p> </div> <p><b><span style="color:rgb(0, 87, 174);">TakeProfit setting for partial closing:</span></b></p> <p><b></b></p> <p>TakeProfit uses profit from restoring orders, as well as loss, which is part of the volume of <b>"Part to close from a loss-making position" </b>lots from each type of orders from a losing position.</p> <p>To get the minimum<b> "TakeProfit for partial close"</b> value, you need to multiply the used spread by at least 3, so that at closing the spread and slippage are not greater than the TakeProfit value, and thus the closing is profitable.</p> <p><b></b></p> <div class="atten" bis_skin_checked="1"> <span><b>"TakeProfit for partial close" = current spread multiplied by 3 or more.</b></span> </div> <p><span>If this value is less than the slippage may be greater than the profit from Take Profit.</span></p> <div class="fquote" bis_skin_checked="1"> <p style="text-align:center;"><span><i>For popular pairs like EURUSD you can use the default value.</i></span></p> </div> <p><b><span style="color:rgb(0, 87, 174);">Setting the Step between averaging orders.</span></b></p> <p>Adjusted by variable&nbsp;<b>"Step for average"</b>, additionally you can apply a dynamic grid step, regulated by a variable&nbsp;<b>"</b><b>Multiplier to step"</b>.</p> <p>Step between averaging orders. If the step is too small, then the number of averaging orders will increase, which can increase the drawdown. If the step is too large, then this can greatly slow down the recovery process. The step between averaging orders is calculated based on the current volatility. To do this, you can use the ATR indicator enabled on the daily timeframe.</p> <p>The readings of this indicator indicate the average daily volatility for the selected instrument at the moment. Therefore, what step should be between the EA's averaging orders. The readings<span>depend on the instrument being used, as different instruments have different daily volatility. The trader's task is to determine the average daily volatility. To do this, you need to use the "Average True Range" (ATR) indicator on the "D1" (Daily) timeframe with a period of "14" for average activity. For high activity (for example, when trading gold), you can use the value of half<span>ATR</span>.</span>It is necessary to determine the average daily volatility, while eliminating the abnormal behavior of the indicator (strong bursts or too calm sections of the chart).</p> <p>On the example of the EURUSD chart image, 5 decimal places are used, it can be seen that the average daily volatility is 700 - 750 points.</p> <p style="text-align:center;"> <img width="640" height="480" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/111-24.jpg" loading="lazy" alt=""><br></p> <p>Based on the data obtained by analysing the instrument chart, we calculate the "<b>Step for average" variable:</b></p> <div class="atten" bis_skin_checked="1"> <p style="text-align:center;"><b><span>«Step for average» = Average daily volatility («ATR» D1, period 14) / 4 or 2</span> </b> </p> </div> <p></p> <p></p> <div class="fquote" bis_skin_checked="1"> <p><br>For high risk trading, we take a small step between orders, then many orders will be opened. Divide the average daily volatility by 4. (736 / 4 = 184 "<b>Step for average"</b><b>).</b></p> <p>In order to use average risks, we divide the average daily volatility by 3 (650 / 3 = 245 "<b>Step for average"</b><b>).</b></p> <p>For low risks, we divide this indicator by 2 (650 / 2 = 368 "<b>Step for average"</b>).</p> </div> <p>On charts with the JPY symbol, the number of decimal places is usually three. As you can see in the example below, the average daily volatility for the GBPJPY pair will be approximately 1100 - 1200 points.</p> <p style="text-align:center;"> <img width="640" height="480" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/3333-24.jpg" loading="lazy" alt=""><br></p> <p>For pairs with metals, the situation will also be slightly different. The number of decimal places is usually two.</p> <p>This can be seen in the example below, so the average daily volatility for the XAUUSD pair is approximately 1200 - 1300 pips.</p> <p style="text-align:center;"> <img width="640" height="480" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/2222-24.jpg" loading="lazy" alt=""><br></p> <div class="fquote" bis_skin_checked="1"> <p><i></i></p><i>To determine the ATP value, you just need to remove all zeros on the left (as in the example with EURUSD), we take the numbers that will follow the zeros as the average daily volatility.</i> </div> <p>There are situations when the number of characters in the ATR indicator window depends on the number of decimal places on your chart. In this case, it is necessary to round the value in ATR to the value that is reflected on the chart. The example uses the same chart with the XAUUSD pair, however, you can see that there are 4 symbols after the decimal point in the indicator window, and 2 symbols on the chart. In order to determine the ATR value, we round off the last two decimal places.</p> <p style="text-align:center;"> <img width="640" height="480" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/444-24.png" loading="lazy" alt=""><br></p> <p>For different brokers, the number of decimal places may vary. This will affect the value received for the step. It is especially important to take this into account when you work on the terminals of different brokers, check the number of decimal places before starting the adviser.</p> <p><br></p> <p><span>Dynamic grid spacing, adjustable by variable<span>&nbsp;</span></span><b>"</b><b>Multiplier to step"</b><span>.&nbsp;</span><i>Using the multiplier, you can more flexibly approach the calculation of order volumes using the dynamic step of the order grid.</i></p> <div class="fquote" bis_skin_checked="1"> <p><span><i><b></b></i></span></p> <p><i><span><b><span style="color:rgb(0, 87, 174);">For example:</span></b></span><b><span style="color:rgb(0, 87, 174);">&nbsp;</span>"Step for average"&nbsp;</b>= 100, and&nbsp;<b>"</b><b>multiplier to step"&nbsp;</b>= 1.5.</i></p> <p><i>This means that after the first order, the second order of the same direction will open after 100 points, and the third order will have to open after 100 * 1.5 = 150 points. Further, the fourth order will open in 150<span>* 1.5 = 225 points</span>and so on...</i></p> <p><i>That is, there will not be so many orders in the basket in this way.</i></p> <p></p> </div> <p><span>When working with trend filters, the EA, in addition to the step, will wait for a signal from the indicator before opening a new order.</span></p> <p><br></p> <div bis_skin_checked="1"> <div class="atten" bis_skin_checked="1"> <h3> <p>7. Trend filters.</p></h3> </div> <div bis_skin_checked="1"> <p>An important point in setting up an adviser is setting up trend filters. That is, setting the final confirmation signals for opening an averaging order. Filters are adjusted in the variable "<b>Trend filtering for average orders</b>"</p> <p style="text-align:center;"> <img width="1126" height="501" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/6owc5r_rujacu_2022-06-21_3_10.52.42.png" loading="lazy" alt=""><br></p> <p><b>AW Recovery&nbsp;</b>will open orders in accordance with the given strategy only if there is a corresponding trend determined by one of the indicators. In total, you can choose one of three settings options:</p> <p></p> <ul> <li><b>BullsBears Candles Filtering&nbsp;</b>- Custom indicator of reversal candle patterns. When using the "<b>BullsBears Candles"&nbsp;</b>filter, the&nbsp;<b>AW Recovery&nbsp;</b>Expert Advisor analyses the indicator readings on the current timeframe, so the choice of timeframe affects the signal.</li> </ul> <p></p> <p></p> <ul> <li><b>AW Trend Predictor Filtering&nbsp;</b>- Built-in AW Trend Predictor trend indicator. If the "<b>AW Trend Predictor"&nbsp;</b>filter is used, the EA will analyse the indicator readings for the selected timeframe in the "<b>AW Trend Predictor timeframe" </b>variable.&nbsp;Also, for a more flexible setting of the indicator, the ability to adjust the indicator period is built-in.</li> </ul> <p></p> <p>When choosing to open averaging orders, taking into account the signals of the built-in indicator "<b>AW Trend Predictor Filtering"&nbsp;</b>set the variable&nbsp;<b>"</b><b>AW Trend Predictor timeframe".&nbsp;</b>The entry point will use the timeframe of your current chart. For filtering, it is necessary to use a timeframe of a larger range. For example, if you work on the M15 timeframe, then you need to use the M30 timeframe or more for filtering. Allows you to filter market noise.</p> <div class="fquote" bis_skin_checked="1"> <p><i><i>The ability to use a trend filter timeframe that differs from the current one will only be relevant when applying a variable&nbsp;<b>"One Opened Order per Bar filtering"&nbsp;</b>in mode&nbsp;<b>"ON"&nbsp;</b>that is, if on the current timeframe&nbsp;<b>AW Recovery&nbsp;</b>keeps open no more than one averaging order per 1 candle.</i></i></p> </div> <ul></ul> <p>Also setting the variable&nbsp;<b>"Period AW Trend Predictor"&nbsp;</b><span>will allow you to adjust the accuracy of the indicator signals, the&nbsp;</span>larger the value of the variable, the lower the sensitivity of the indicator signals (rare signals), the smaller the value you entered, the greater the sensitivity of the indicator signals (more frequent signals).</p> <p></p> <ul> <li><b>Simple grids -&nbsp;</b>The EA will open averaging orders without using trend filtering.&nbsp;</li> </ul> <div bis_skin_checked="1"> <div bis_skin_checked="1"> <p><b><span><br>Difference in aggressiveness when using three options in the "Trend filtering for average orders" variable:</span></b></p> <p>1) The most stringent filtering is possible when working with the built-in indicator<span>&nbsp;</span><b>trend predictor</b>.</p> </div> <div bis_skin_checked="1"> <p>2) When working without filtering, orders will be opened strictly at a given step (or a step with a multiplier), which can provide an average level of aggressiveness.</p> <p>3) Strategy work<span>&nbsp;</span><b>Bulls Bears</b><span>&nbsp;</span>- this is work during the reversal of candle patterns, that is, work in the direction of possible price corrections. May be the most aggressive strategy.</p> </div><br> </div> <p></p> <div class="fquote" bis_skin_checked="1"> <p><span><i><span></span></i></span></p> <p><span><i><span style="color:rgb(0, 87, 174);">Why didn't the next averaging order open after the given step?</span></i></span></p> <p><i><span></span>If you are working with trend filters, then through&nbsp;<b>"Step for average"&nbsp;</b>points&nbsp;<b>AW Recovery&nbsp;</b>will begin to wait for a signal from a trend indicator to open an averaging order.</i></p> <p><i>That is, in addition to the step <b>AW Recovery &nbsp;</b>will wait for a signal from the trend filter and only when the trend gives the appropriate signal, the next order will be opened.</i></p> </div> <ul> <li>The adjustment for opening the first order in the basket is done by the "<span>&nbsp;</span><b>Signals of AW Trend Predictor" variable.</b><span>&nbsp;</span>This is the ability to choose to open a new first order (in the basket) only when a new signal from the indicator arrives or as soon as the previous ones are closed (more orders).</li> </ul> <p></p> <p><span><b>Firs trade by trend direction</b><span>&nbsp;</span>- the adviser will open new orders immediately after closing the previous ones throughout the entire trend direction. When one basket is closed (when using grids), or one order, even in the absence of a new signal, new orders will be opened according to the current trend (more transactions).</span></p> <p><span><b>firs trade at trend reverse</b><span><span>&nbsp;</span>-</span><span>&nbsp;</span>the adviser will open new orders only when a new signal is received from the indicator. That is, the adviser trades once per signal. Thus, only one grid will be able to open during one trend (fewer trades).</span></p> <p></p> <ul> <li>Adjustment for opening subsequent orders in the basket, after the first order opened. Adjusted by the variable "<span>&nbsp;</span><b>Averaging with Trend Predictor filtering</b><span>&nbsp;</span>".</li> </ul> <p></p> <div bis_skin_checked="1"> <p></p> <p><b>Averaging in any direction</b><span>&nbsp;</span>- After opening the first order on the signal of the Trend Predictor indicator, averaging will occur regardless of the change in market directions.</p> <p><b>Averaging only by trend direction</b><span>&nbsp;</span>- After opening the first order in the basket, further development of the grid is possible only if the current trend is in the same direction. You can only average those orders that coincide with the direction of the Trend Predictor indicator (at the moment the first order is opened).</p> </div> <p><br></p> <div class="atten" bis_skin_checked="1"> <h3> <p>8. Current group of orders. Calculation of commissions.<br></p></h3> </div> <div bis_skin_checked="1"> <p>At work&nbsp;<b>AW Recovery&nbsp;</b>does not close individual orders entirely. The entire position, divided into orders, is virtually divided into smaller parts. The EA closes individual orders in parts, closing a part of an order requires a smaller amount of generated profit, as well as a smaller amount of averaging orders required to open. It is the work with partial closure that allows you to restore positions more safely.</p> <p style="text-align:center;"> <img width="600" height="449" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/ezgif.com-gif-maker.gif" loading="lazy" alt=""><br></p> <p></p> <p>The current group is the virtually selected part to close. The current group is determined by the adviser from a losing position (part of a long and short position), as well as averaging orders with which parts of the position will be closed. The data of volumes, number of orders and profits of the current group are displayed in the panel of the current group. Also, using this panel, you can close the current processed group in one click.</p> <p>When calculating the group, swaps and commissions of losing and averaging orders are taken into account. Also, if ECN accounts are used by the broker, additional commissions may be charged for partial closing for the entire volume of orders formed as a result of closing a part of orders, that is, for the full balance each time a part is closed. These additional fee calculations can be changed using the "<span>&nbsp;</span><b>TrueECN_Type_of_account</b><span>&nbsp;</span>" variable. In case of using an ECN account.</p> <p><b><span style="color:rgb(0, 87, 174);">Use full commission when calculating&nbsp;</span></b>- This variable controls the type of commission accounting. This accounting is relevant for some types of ECN accounts. For some brokers, when partially closing, the full amount of the commission for the newly formed order is removed.</p> <p>That is, if you have an order with a volume of 1 lot and you close a part of 0.01 from it, then the broker will take a commission for the remainder of 0.99, since he will calculate this volume as a new order.</p> <p><br>This is rare, but now the EA has the option to enable or disable this accounting. That is, if "<b>Use full commission when calculating</b>" = "<b>true</b>", then the EA will take into account the additional full commission for each partial close.</p> <p>If your account does not account for this additional volume, then the variable should be set to false. In the default settings, accounting for the full volume of commissions for partial closure is disabled, that is, everything works like for most types of accounts.</p> <p><br></p> <div class="atten" bis_skin_checked="1"> <h3> <p>9. Notification settings.<br></p></h3> </div> </div> <div bis_skin_checked="1"> <p><b>AW Recovery</b>&nbsp;can send three types of notifications, these are</p> <p></p> <ul> <li>Alerts.</li> <li>Sending an email.</li> <li>Sending push notifications to the mobile version of the trader's terminal.</li> </ul> <p></p> <p>Notifications are sent in the following cases:</p> <ul> <li>The adviser exits the standby mode, the beginning of the restoration of the position.</li> <li>Completion of recovery, the moment of closing the last part of the position.</li> </ul> <p>You can enable or disable the sending of notifications in the input settings, the variable "<b>Notifications at launch and end of recovery</b>".</p> <p style="text-align:center;"> <img width="1134" height="504" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/y6yx0n_gpap2k_2022-06-21_7_11.00.52.png" loading="lazy" alt=""><br></p> <p></p> <ul> <li>In order to enable sending notifications to e-mail, you should not only enable the corresponding variable in the Expert Advisor, but also make the appropriate settings in the terminal itself. To do this, you need to go through the "Tools" tab in the options menu (Or press Ctrl + O), in this menu there is an Email tab, in which you already need to specify the appropriate values. This menu has detailed help when you click on the corresponding button in the window.</li> </ul> <p></p> <p style="text-align:center;"> <img width="946" height="608" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/9olqdt_26ltfg_2022-06-21_m_10.59.13.png" loading="lazy" alt=""><br></p> <p></p> <ul> <li>In order to enable alerts, you need to check the corresponding box in the general settings window of the adviser</li> </ul> <p></p> <p></p> <p></p> <p style="text-align:center;"></p> <p style="text-align:center;"></p> <p style="text-align:center;"></p><div bis_skin_checked="1"> <img width="1134" height="542" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/gjaz3n_e1drxz_2022-06-21_9_10.58.28.png" loading="lazy" alt=""><br> </div><p></p> <p></p> <p></p> <p></p> <p></p> <p></p> <p></p> <p><br></p> <p></p> <p></p> <ul> <li>In order to set up push notifications in addition to the installed MetaTrader application, you need to make a couple of settings. To do this, you need to go through the "Tools" tab in the options menu (Or press Ctrl + O), in this menu there is a Notifications tab, in which you already need to specify the corresponding MetaQuotes ID value taken from your MetaTrader application</li> </ul> <p></p> <p></p> <p></p> <p style="text-align:center;"></p> <p style="text-align:center;"></p> <p style="text-align:center;"></p><div bis_skin_checked="1"> <img width="946" height="608" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/d60uhb_quwdqx_2022-06-21_4_10.59.01.png" loading="lazy" alt=""><br> </div><p></p> <p></p> <div class="fquote" bis_skin_checked="1"> <p><span><b><span><i></i></span></b></span></p> <p><span><b><span><i><span style="color:rgb(0, 87, 174);">Attention!</span></i></span></b></span></p> <p><span><i>Notifications will be sent using the method that is connected to the trader.</i></span></p> <p><i><span>If all three notification methods are connected, then&nbsp;</span><b>AW Recovery<span>&nbsp;</span></b><span>will send notifications in all possible ways.</span></i></p> </div> <p><br></p> <div class="atten" bis_skin_checked="1"> <h3><span style="color:rgb(86, 86, 86);background-color:rgb(234, 235, 238);">10. Identifiers and their change.</span><br> </h3> </div> <div bis_skin_checked="1"> <p></p> <p>The EA identifies orders in two groups, these are<span>&nbsp;</span></p> <p></p> <ul> <li>A group of lockable orders, that is, all those orders that the adviser will restore and close in parts</li> <li>A group of averaging orders, that is, those orders with which the EA will restore orders from the group of locked ones.</li> </ul> <div bis_skin_checked="1"> <p>Locked orders are those positions that "AW Recovery" will interact with, regulated by the "<b>MagicNumbers group for recovery</b>" variable. You can choose to work with different groups of orders:</p> <p></p> <ul> <li><b>"All orders on the same symbol</b>" when choosing this option&nbsp;<b>AW Recovery&nbsp;</b>will process absolutely all orders opened on the same symbol as<b>AW Recovery</b>.</li> <li><b>"Manual opened orders on same symbol"&nbsp;</b>selection of this option means that&nbsp;<b>AW Recovery&nbsp;</b>will only process those symbol orders whose MagicNumber is equal to that used in&nbsp;<b>AW Recovery&nbsp;</b>and those orders whose MagicNumber is equal to "0", i.e. manually opened orders. Thus, manual orders opened using the&nbsp;<b>AW Recovery&nbsp;</b>panel will be considered as being processed by the EA. The group of orders opened through the panel will be determined depending on the selected setting&nbsp;<b>"Open Average orders via Panel"</b></li> <li><b>"Same Magic Numbers on same Symbol"&nbsp;</b>this option to work with selected MagicNumbers. That is&nbsp;<b>AW Recovery&nbsp;</b>will process only those orders of the current symbol, MagicNumbers of which are entered into the variable<b>MagicNumbers for recovery (sep by comma ",")</b>.</li> </ul> <div bis_skin_checked="1"> <p>If you need to restore the drawdown made by a certain Expert Advisor or a group of Expert Advisors, use the option of working with certain <b>MagicNumbers</b><span>. To choose to work with specific</span><span>&nbsp;</span><b>MagicNumber</b>s&nbsp;<span>enter them</span><b><span>&nbsp;</span>Magic<span>&nbsp;</span></b><span>into a variable</span><span>&nbsp;</span><b>"MagicNumbers for recovery (sep by comma ",")</b><span>". In this case,&nbsp;</span><b>AW Recovery EA&nbsp;</b><span>will only recover the loss of Expert Advisors that have made a drawdown on the account. To restore an order opened manually in this variable, use the value "</span><b>0</b><span>".</span><br></p> </div> <div bis_skin_checked="1"> <p>If there is a specific order that, in the opinion of the trader, should be processed first of all, regardless of its complexity, then this can be adjusted with the "<b>First ticket for recovery (o-not used)"</b> variable.<span>&nbsp;</span>In this case, enter<span>the order ticket that will be processed first. Since the EA closes the position evenly in both directions, the opposite order will be selected according to "</span><b><b>What orders to start from"</b>.</b></p> </div> <p></p> <p>In addition, the EA has built-in functionality to determine which orders will be processed first. Adjusted by the variable "<b>What orders to start from".</b>That is&nbsp;<b>AW Recovery&nbsp;</b>will try to close either the hardest or easiest orders first.</p> <div class="fquote" bis_skin_checked="1"> <p><span><i></i></span></p> <p><span><i><span style="color:rgb(0, 87, 174);">How to get ahead of the best option in a variable"<b>What orders to start from"</b>?</span></i></span></p> <p><i>In case of large position volumes, to accelerate the reduction of swap accrual, the option&nbsp;<b>"Start with easy to close orders"&nbsp;</b>will be more correct. Since in this case&nbsp;<b>AW Recovery EA&nbsp;</b>will process first<b>&nbsp;</b>the easiest to close orders. That is, the processing order will begin with the partial closing of orders, the loss on the minimum volume of which is the least.</i></p> <p><i>If a small amount of positions can sometimes be relevant option&nbsp;<b>"Start with hard to close orders"</b>. In this case, first of all<b>&nbsp;</b>the worst elements of a losing position have been processed. With this choice, there is a possibility of closing the entire position in the TP. That is, the adviser will first of all close those orders, the processing complexity of which is the highest. That is, to carry out a partial closure in the first place of those orders, the loss on the minimum volume of which is the largest.</i></p> <p><i></i></p> </div> </div> </div> </div> </div> </div> <p>Averaging orders&nbsp;<b>AW Recovery&nbsp;</b>are regulated by&nbsp;<b>Magic Number&nbsp;</b>orders.&nbsp;In the variable<b> "MagicNumber of average orders (Should be unique)"&nbsp;</b>- Enter a unique number to identify recovery orders. In order for&nbsp;<b>AW Recovery&nbsp;</b>orders&nbsp;<b></b>did not intersect with the orders of other advisers.</p> <p></p> <p>In some situations, it may be relevant to change the strategy, in such cases, you can change the identifiers&nbsp;<b>"MagicNumber of average orders (Should be unique)"&nbsp;</b>and process the old recovery orders along with the rest of the losing position as part of the new recovery strategy.</p> <div class="fquote" bis_skin_checked="1"> <p><span><i></i></span></p> <p><span><i><span style="color:rgb(0, 87, 174);">How<b>&nbsp;AW Recovery&nbsp;</b>recognizes his own and other people's orders?</span></i></span></p> <p><i>Orders opened&nbsp;<b>AW Recovery&nbsp;</b>are perceived as their own, all other orders are perceived as strangers. To close losing orders, the EA uses profit only from its own orders.</i></p> <p><i>If in the course of work you change&nbsp;<b>MagicNumber&nbsp;</b>in a variable<b>"MagicNumber of average orders (Should be unique)",&nbsp;</b>then the orders opened before that will become for&nbsp;<b>AW Recovery&nbsp;</b>strangers, and the program will block them.</i></p> <p><i>This can be useful if you made a mistake with the settings&nbsp;<b>AW Recovery&nbsp;</b>and increased the drawdown volume, then you can change&nbsp;<b>MagicNumber&nbsp;</b>and the position will be locked.</i></p> <p><i></i></p> </div> <p style="text-align:center;"><br></p> <h3> <p style="text-align:center;"><span><b><span>Buy AW Recovery EA right now:</span></b></span></p> <p style="text-align:center;"><span><b><span><br></span></b></span></p></h3> <p style="text-align:center;"><span class="important"><i><span>MT4 version</span></i><br>👉<a href="https://www.mql5.com/en/market/product/43299" title="https://www.mql5.com/en/market/product/43299" target="_blank">https://www.mql5.com/en/market/product/43299</a><br></span></p> <p style="text-align:center;"><span class="important"><br></span></p> <p style="text-align:center;"><span class="important"><span><i>MT5 version</i></span><br>👉<a href="https://www.mql5.com/en/market/product/49453" target="_blank">https://www.mql5.com/en/market/product/49453</a></span></p> <h3> <p style="text-align:center;"> <img width="201" height="201" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/4g0_i6vtv-201.png" loading="lazy" alt=""><br></p></h3> <p style="text-align:center;"><i><span></span></i></p> <p style="text-align:center;"><i><span>AW Trading Software</span></i></p> <p style="text-align:center;"><i>Support:&nbsp;<a href="https://www.mql5.com/en/users/nechaevrealle" target="_blank">https://www.mql5.com/en/users/nechaevrealle</a></i></p> <p><br></p>
+        </div>
+        <div class="attach" bis_skin_checked="1">
+        </div>
+      </div>
+          <div class="commands" bis_skin_checked="1">
+            <div style="float: left;" bis_skin_checked="1">
+<span class="likeWrapper"><a class="like" id="like_6_0_0_749585" onclick="likes.Like(&#39;en&#39;,6,0,0,749585,&#39;895a24cc1fc796b4e51873f70ba3ecf9&#39;,&#39;3774657fbbb1ce8e7c4403401ff7ff1e&#39;)">Like </a><span class="likesCount" id="likes_6_0_0_749585">6</span></span> <i>·</i>                <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" class="newComment" onclick="return toggleNewMessage();" title="New comment">Your comment</a>
+            </div>
+            <div style="clear: both" bis_skin_checked="1"></div>
+          </div>
+    </div>
+        <div class="commentsBox" bis_skin_checked="1">
+          
+
+  
+<div class="comments" id="comments" bis_skin_checked="1">
+              <div class="comment" id="comment_51974365" bis_skin_checked="1">
+              <article id="comment_51974365">
+                  <aside>
+                    <div class="user" bis_skin_checked="1"><div class="frame" bis_skin_checked="1"><div class="bg" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/63f3b502-9363.jpg" srcset="https://c.mql5.com/avatar/2023/2/63f3b502-9363_big.jpg 2x" alt="Pavol Kohutik" title="Pavol Kohutik" data-user-login="pavol01" loading="lazy" width="60" height="60"></div></div><span title="Rating">251</span></div>
+
+                 </aside>
+
+                <div class="text" bis_skin_checked="1">
+                  <header>
+                      <span id="author_info_51974365" style="font-weight: bold;"><a class="author" href="https://www.mql5.com/en/users/pavol01">Pavol Kohutik</a></span>
+                      
+                      <span class="comment__date" id="date_51974365" data-date-create="2024.01.30 18:56" data-date-modify="" title="Created"><time datetime="2024-01-30T18:56Z">2024.01.31 02:56</time></span>
+                                            
+                      
+                      
+<a class="permalink" title="Permanent link" href="https://www.mql5.com/en/blogs/post/749585#comment_51974365" rel="nofollow" onclick="return false;">#1</a>                        &nbsp;<span class="commands"><span class="command newMessageLink"><a title="Send a private message to Pavol Kohutik" href="https://www.mql5.com/en/users/i.Andy/messages" onclick="if(window.openChatWith){window.openChatWith(&#39;pavol01&#39;,7273580,&#39;Pavol Kohutik&#39;);return false;}if(window.doPost) { window.doPost(null,&#39;/en/users/i.andy/messages&#39;,null,{&#39;user&#39;:&#39;pavol01&#39;}); return false; }"></a></span>
+</span>
+
+                  </header>
+      
+                  <div class="content" id="content51974365" bis_skin_checked="1">hi. how does it partialy close if the lot is just small 0.01 or 0.02 but there are many of them and they accumulated a bigger DD lets say $500</div>
+
+
+                </div>
+
+
+
+                <div class="options" bis_skin_checked="1">
+                <span id="complain_51974365"><a href="javascript:complaintInline(51974365,6,17,6)" rel="nofollow">complain</a></span><span id="reply_51974365"> | <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" rel="nofollow" onclick="quoteInline(&#39;51974365&#39;);">reply</a></span>
+
+                </div>
+               </article>
+            </div>
+              <div class="comment" id="comment_51993497" bis_skin_checked="1">
+              <article id="comment_51993497">
+                  <aside>
+                    <div class="user" bis_skin_checked="1"><div class="frame" bis_skin_checked="1"><div class="bg" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/6532960b-f75b.png" srcset="https://c.mql5.com/avatar/2023/10/6532960b-f75b_big.png 2x" alt="AW Trading Software Limited" title="AW Trading Software Limited" data-user-login="NechaevRealle" loading="lazy" width="60" height="60"></div></div><span title="Rating">185065</span></div>
+
+                 </aside>
+
+                <div class="text" bis_skin_checked="1">
+                  <header>
+                      <span id="author_info_51993497" style="font-weight: bold;"><a class="author" href="https://www.mql5.com/en/users/nechaevrealle">Alexander Nechaev</a></span>
+                      
+                      <span class="comment__date" id="date_51993497" data-date-create="2024.01.31 22:20" data-date-modify="" title="Created"><time datetime="2024-01-31T22:20Z">2024.02.01 06:20</time></span>
+                                            
+                      
+                      
+<a class="permalink" title="Permanent link" href="https://www.mql5.com/en/blogs/post/749585#comment_51993497" rel="nofollow" onclick="return false;">#2</a>                        &nbsp;<span class="commands"><span class="command newMessageLink"><a title="Send a private message to Alexander Nechaev" href="https://www.mql5.com/en/users/i.Andy/messages" onclick="if(window.openChatWith){window.openChatWith(&#39;nechaevrealle&#39;,1985088,&#39;Alexander Nechaev&#39;);return false;}if(window.doPost) { window.doPost(null,&#39;/en/users/i.andy/messages&#39;,null,{&#39;user&#39;:&#39;NechaevRealle&#39;}); return false; }"></a></span>
+</span>
+
+                  </header>
+      
+                  <div class="content" id="content51993497" bis_skin_checked="1"><div class="fquote" bis_skin_checked="1"> <strong><span style="color:#42639C;">Pavol Kohutik <a href="https://www.mql5.com/en/blogs/post/749585#comment_51974365">#</a></span> :</strong><br> hi. how does it partialy close if the lot is just small 0.01 or 0.02 but there are many of them and they accumulated a bigger DD lets say $500 </div> <p>Hello,</p> <p><br></p> <p>Splitting into partial closes is only possible if permitted by your broker and volume allows. If the volume cannot be closed in several parts, these volumes will be closed by the advisor as a whole. The best option to check exactly how this will work is to try running the advisor in the strategy tester in visual testing mode and open the necessary orders manually. The instructions have a detailed description of how to do this. I think this is the best option to test different variations of the advisor’s behavior for different situations, since there can be quite a lot of options for drawdown situations in terms of volumes and their location.</p> <p><br></p> <p>Kind regards</p></div>
+
+
+                </div>
+
+
+
+                <div class="options" bis_skin_checked="1">
+                <span id="complain_51993497"><a href="javascript:complaintInline(51993497,6,17,6)" rel="nofollow">complain</a></span><span id="reply_51993497"> | <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" rel="nofollow" onclick="quoteInline(&#39;51993497&#39;);">reply</a></span>
+
+                </div>
+               </article>
+            </div>
+              <div class="comment" id="comment_52256707" bis_skin_checked="1">
+              <article id="comment_52256707">
+                  <aside>
+                    <div class="user" bis_skin_checked="1"><div class="frame" bis_skin_checked="1"><div class="bg" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/63f3b502-9363.jpg" srcset="https://c.mql5.com/avatar/2023/2/63f3b502-9363_big.jpg 2x" alt="Pavol Kohutik" title="Pavol Kohutik" data-user-login="pavol01" loading="lazy" width="60" height="60"></div></div><span title="Rating">251</span></div>
+
+                 </aside>
+
+                <div class="text" bis_skin_checked="1">
+                  <header>
+                      <span id="author_info_52256707" style="font-weight: bold;"><a class="author" href="https://www.mql5.com/en/users/pavol01">Pavol Kohutik</a></span>
+                      
+                      <span class="comment__date" id="date_52256707" data-date-create="2024.02.12 10:40" data-date-modify="" title="Created"><time datetime="2024-02-12T10:40Z">2024.02.12 18:40</time></span>
+                                            
+                      
+                      
+<a class="permalink" title="Permanent link" href="https://www.mql5.com/en/blogs/post/749585#comment_52256707" rel="nofollow" onclick="return false;">#3</a>                        &nbsp;<span class="commands"><span class="command newMessageLink"><a title="Send a private message to Pavol Kohutik" href="https://www.mql5.com/en/users/i.Andy/messages" onclick="if(window.openChatWith){window.openChatWith(&#39;pavol01&#39;,7273580,&#39;Pavol Kohutik&#39;);return false;}if(window.doPost) { window.doPost(null,&#39;/en/users/i.andy/messages&#39;,null,{&#39;user&#39;:&#39;pavol01&#39;}); return false; }"></a></span>
+</span>
+
+                  </header>
+      
+                  <div class="content" id="content52256707" bis_skin_checked="1"><div class="fquote" bis_skin_checked="1"> <strong><span style="color:#42639C;">Alexander Nechaev <a href="https://www.mql5.com/en/blogs/post/749585#comment_51993497">#</a></span>:</strong><br> <p>Hello,</p> <p><br></p> <p>Splitting into partial closes is only possible if permitted by your broker and volume allows. If the volume cannot be closed in several parts, these volumes will be closed by the advisor as a whole. The best option to check exactly how this will work is to try running the advisor in the strategy tester in visual testing mode and open the necessary orders manually. The instructions have a detailed description of how to do this. I think this is the best option to test different variations of the advisor’s behavior for different situations, since there can be quite a lot of options for drawdown situations in terms of volumes and their location.</p> <p><br></p> <p>Kind regards</p> </div> <p>thank you alex</p></div>
+
+
+                </div>
+
+
+
+                <div class="options" bis_skin_checked="1">
+                <span id="complain_52256707"><a href="javascript:complaintInline(52256707,6,17,6)" rel="nofollow">complain</a></span><span id="reply_52256707"> | <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" rel="nofollow" onclick="quoteInline(&#39;52256707&#39;);">reply</a></span>
+
+                </div>
+               </article>
+            </div>
+              <div class="comment" id="comment_52542462" bis_skin_checked="1">
+              <article id="comment_52542462">
+                  <aside>
+                    <div class="user" bis_skin_checked="1"><div class="frame" bis_skin_checked="1"><div class="bg" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/avatar_na2.png" srcset="https://c.mql5.com/avatar/avatar_na2_big.png 2x" alt="Eugene, Romual Re" title="Eugene, Romual Re" data-user-login="Jeton68" loading="lazy" width="60" height="60"></div></div><span title="Rating">280</span></div>
+
+                 </aside>
+
+                <div class="text" bis_skin_checked="1">
+                  <header>
+                      <span id="author_info_52542462" style="font-weight: bold;"><a class="author" href="https://www.mql5.com/en/users/jeton68">Eugene, Romual Re</a></span>
+                      
+                      <span class="comment__date" id="date_52542462" data-date-create="2024.02.27 19:26" data-date-modify="" title="Created"><time datetime="2024-02-27T19:26Z">2024.02.28 03:26</time></span>
+                                            
+                      
+                      
+<a class="permalink" title="Permanent link" href="https://www.mql5.com/en/blogs/post/749585#comment_52542462" rel="nofollow" onclick="return false;">#4</a>                        &nbsp;<span class="commands"><span class="command newMessageLink"><a title="Send a private message to Eugene, Romual Re" href="https://www.mql5.com/en/users/i.Andy/messages" onclick="if(window.openChatWith){window.openChatWith(&#39;jeton68&#39;,3366168,&#39;Eugene, Romual Re&#39;);return false;}if(window.doPost) { window.doPost(null,&#39;/en/users/i.andy/messages&#39;,null,{&#39;user&#39;:&#39;Jeton68&#39;}); return false; }"></a></span>
+</span>
+
+                  </header>
+      
+                  <div class="content" id="content52542462" bis_skin_checked="1"><div bis_skin_checked="1"> Hello Alexander, a huge thank you for this tool which was missing in my arcenal. The possibilities are immense if you take the necessary time to test different parameters. I mainly work with EAs and parameters with very low DD (less than 6 percent), so AW Recovery comes into action at 10 percent drawdown and I am extremely satisfied with it. </div> <div bis_skin_checked="1"> <br> </div> <div bis_skin_checked="1"> Thanks again Alexander </div></div>
+
+
+                </div>
+
+
+
+                <div class="options" bis_skin_checked="1">
+                <span id="complain_52542462"><a href="javascript:complaintInline(52542462,6,17,6)" rel="nofollow">complain</a></span><span id="reply_52542462"> | <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" rel="nofollow" onclick="quoteInline(&#39;52542462&#39;);">reply</a></span>
+
+                </div>
+               </article>
+            </div>
+              <div class="comment" id="comment_53618037" bis_skin_checked="1">
+              <article id="comment_53618037">
+                  <aside>
+                    <div class="user" bis_skin_checked="1"><div class="frame" bis_skin_checked="1"><div class="bg" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/605F3951-E059.png" srcset="https://c.mql5.com/avatar/2021/3/605F3951-E059_big.png 2x" alt="Carlos Alberto De Oliveira Casagrande" title="Carlos Alberto De Oliveira Casagrande" data-user-login="Bighouse1974" loading="lazy" width="60" height="60"></div></div><span title="Rating">13</span></div>
+
+                 </aside>
+
+                <div class="text" bis_skin_checked="1">
+                  <header>
+                      <span id="author_info_53618037" style="font-weight: bold;"><a class="author" href="https://www.mql5.com/en/users/bighouse1974">Carlos Alberto De Oliveira Casagrande</a></span>
+                      
+                      <span class="comment__date" id="date_53618037" data-date-create="2024.06.07 14:18" data-date-modify="" title="Created"><time datetime="2024-06-07T14:18Z">2024.06.07 22:18</time></span>
+                                            
+                      
+                      
+<a class="permalink" title="Permanent link" href="https://www.mql5.com/en/blogs/post/749585#comment_53618037" rel="nofollow" onclick="return false;">#5</a>                        &nbsp;<span class="commands"><span class="command newMessageLink"><a title="Send a private message to Carlos Alberto De Oliveira Casagrande" href="https://www.mql5.com/en/users/i.Andy/messages" onclick="if(window.openChatWith){window.openChatWith(&#39;bighouse1974&#39;,9588771,&#39;Carlos Alberto De Oliveira Casagrande&#39;);return false;}if(window.doPost) { window.doPost(null,&#39;/en/users/i.andy/messages&#39;,null,{&#39;user&#39;:&#39;Bighouse1974&#39;}); return false; }"></a></span>
+</span>
+
+                  </header>
+      
+                  <div class="content" id="content53618037" bis_skin_checked="1"><span>Hello, reading the manual I found a question about the atr d1. In the case of USDCAD H1, the daily atr(14) is at 0.0065. How would you do this calculation, for "step for average"? Thanks</span></div>
+
+
+                </div>
+
+
+
+                <div class="options" bis_skin_checked="1">
+                <span id="complain_53618037"><a href="javascript:complaintInline(53618037,6,17,6)" rel="nofollow">complain</a></span><span id="reply_53618037"> | <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" rel="nofollow" onclick="quoteInline(&#39;53618037&#39;);">reply</a></span>
+
+                </div>
+               </article>
+            </div>
+              <div class="comment" id="comment_53627691" bis_skin_checked="1">
+              <article id="comment_53627691">
+                  <aside>
+                    <div class="user" bis_skin_checked="1"><div class="frame" bis_skin_checked="1"><div class="bg" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/6532960b-f75b.png" srcset="https://c.mql5.com/avatar/2023/10/6532960b-f75b_big.png 2x" alt="AW Trading Software Limited" title="AW Trading Software Limited" data-user-login="NechaevRealle" loading="lazy" width="60" height="60"></div></div><span title="Rating">185065</span></div>
+
+                 </aside>
+
+                <div class="text" bis_skin_checked="1">
+                  <header>
+                      <span id="author_info_53627691" style="font-weight: bold;"><a class="author" href="https://www.mql5.com/en/users/nechaevrealle">Alexander Nechaev</a></span>
+                      
+                      <span class="comment__date" id="date_53627691" data-date-create="2024.06.08 18:29" data-date-modify="" title="Created"><time datetime="2024-06-08T18:29Z">2024.06.09 02:29</time></span>
+                                            
+                      
+                      
+<a class="permalink" title="Permanent link" href="https://www.mql5.com/en/blogs/post/749585#comment_53627691" rel="nofollow" onclick="return false;">#6</a>                        &nbsp;<span class="commands"><span class="command newMessageLink"><a title="Send a private message to Alexander Nechaev" href="https://www.mql5.com/en/users/i.Andy/messages" onclick="if(window.openChatWith){window.openChatWith(&#39;nechaevrealle&#39;,1985088,&#39;Alexander Nechaev&#39;);return false;}if(window.doPost) { window.doPost(null,&#39;/en/users/i.andy/messages&#39;,null,{&#39;user&#39;:&#39;NechaevRealle&#39;}); return false; }"></a></span>
+</span>
+
+                  </header>
+      
+                  <div class="content" id="content53627691" bis_skin_checked="1"><div class="fquote" bis_skin_checked="1"> <strong><span style="color:#42639C;">Carlos Alberto De Oliveira Casagrande <a href="https://www.mql5.com/en/blogs/post/749585#comment_53618037">#</a></span> :</strong><br> <span>Hello, reading the manual I found a question about the atr d1. In the case of USDCAD H1, the daily atr(14) is at 0.0065. How would you do this calculation, for "step for average"? Thanks</span> </div> <p>Hello.</p> <p><br></p> <p>When the ATR indicator is 0.00650. I would use 650 as the unit from which to calculate the step. That is, 650 divided by 2 or 3 or 4 (depending on your strategy).</p> <p>The step in this case is in the range from 162 to 325.</p> <p><br></p> <p>I hope this will be useful for you.</p> <p>Best regards</p></div>
+
+
+                </div>
+
+
+
+                <div class="options" bis_skin_checked="1">
+                <span id="complain_53627691"><a href="javascript:complaintInline(53627691,6,17,6)" rel="nofollow">complain</a></span><span id="reply_53627691"> | <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" rel="nofollow" onclick="quoteInline(&#39;53627691&#39;);">reply</a></span>
+
+                </div>
+               </article>
+            </div>
+              <div class="comment" id="comment_55025695" bis_skin_checked="1">
+              <article id="comment_55025695">
+                  <aside>
+                    <div class="user" bis_skin_checked="1"><div class="frame" bis_skin_checked="1"><div class="bg" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/avatar_na2.png" srcset="https://c.mql5.com/avatar/avatar_na2_big.png 2x" alt="fxfix85" title="fxfix85" data-user-login="fxfix85" loading="lazy" width="60" height="60"></div></div><span title="Rating">9</span></div>
+
+                 </aside>
+
+                <div class="text" bis_skin_checked="1">
+                  <header>
+                      <span id="author_info_55025695" style="font-weight: bold;"><a class="author" href="https://www.mql5.com/en/users/fxfix85">fxfix85</a></span>
+                      
+                      <span class="comment__date" id="date_55025695" data-date-create="2024.11.04 17:21" data-date-modify="" title="Created"><time datetime="2024-11-04T17:21Z">2024.11.05 01:21</time></span>
+                                            
+                      
+                      
+<a class="permalink" title="Permanent link" href="https://www.mql5.com/en/blogs/post/749585#comment_55025695" rel="nofollow" onclick="return false;">#7</a>                        &nbsp;<span class="commands"><span class="command newMessageLink"><a title="Send a private message to fxfix85" href="https://www.mql5.com/en/users/i.Andy/messages" onclick="if(window.openChatWith){window.openChatWith(&#39;fxfix85&#39;,9732124,&#39;fxfix85&#39;);return false;}if(window.doPost) { window.doPost(null,&#39;/en/users/i.andy/messages&#39;,null,{&#39;user&#39;:&#39;fxfix85&#39;}); return false; }"></a></span>
+</span>
+
+                  </header>
+      
+                  <div class="content" id="content55025695" bis_skin_checked="1"><div class="fquote" bis_skin_checked="1"> <strong><span style="color:#42639C;">Eugene, Romual Re <a href="https://www.mql5.com/en/blogs/post/749585#comment_52542462">#<span></span></a></span>:</strong><br> <div bis_skin_checked="1"> Hello Alexander, a huge thank you for this tool which was missing in my arcenal. The possibilities are immense if you take the necessary time to test different parameters. I mainly work with EAs and parameters with very low DD (less than 6 percent), so AW Recovery comes into action at 10 percent drawdown and I am extremely satisfied with it. </div> <div bis_skin_checked="1"> <br> </div> <div bis_skin_checked="1"> Thanks again Alexander </div> </div> Do you have a set file you could share? I'm also looking at controlling DD at around 10% thanks</div>
+
+
+                </div>
+
+
+
+                <div class="options" bis_skin_checked="1">
+                <span id="complain_55025695"><a href="javascript:complaintInline(55025695,6,17,6)" rel="nofollow">complain</a></span><span id="reply_55025695"> | <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" rel="nofollow" onclick="quoteInline(&#39;55025695&#39;);">reply</a></span>
+
+                </div>
+               </article>
+            </div>
+              <div class="comment" id="comment_55342682" bis_skin_checked="1">
+              <article id="comment_55342682">
+                  <aside>
+                    <div class="user" bis_skin_checked="1"><div class="frame" bis_skin_checked="1"><div class="bg" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/avatar_na2.png" srcset="https://c.mql5.com/avatar/avatar_na2_big.png 2x" alt="Ismael Naceda Lumagui" title="Ismael Naceda Lumagui" data-user-login="Zacktrader08" loading="lazy" width="60" height="60"></div></div><span title="Rating">202</span></div>
+
+                 </aside>
+
+                <div class="text" bis_skin_checked="1">
+                  <header>
+                      <span id="author_info_55342682" style="font-weight: bold;"><a class="author" href="https://www.mql5.com/en/users/zacktrader08">Ismael Naceda Lumagui</a></span>
+                      
+                      <span class="comment__date" id="date_55342682" data-date-create="2024.12.10 01:07" data-date-modify="" title="Created"><time datetime="2024-12-10T01:07Z">2024.12.10 09:07</time></span>
+                                            
+                      
+                      
+<a class="permalink" title="Permanent link" href="https://www.mql5.com/en/blogs/post/749585#comment_55342682" rel="nofollow" onclick="return false;">#8</a>                        &nbsp;<span class="commands"><span class="command newMessageLink"><a title="Send a private message to Ismael Naceda Lumagui" href="https://www.mql5.com/en/users/i.Andy/messages" onclick="if(window.openChatWith){window.openChatWith(&#39;zacktrader08&#39;,4652254,&#39;Ismael Naceda Lumagui&#39;);return false;}if(window.doPost) { window.doPost(null,&#39;/en/users/i.andy/messages&#39;,null,{&#39;user&#39;:&#39;Zacktrader08&#39;}); return false; }"></a></span>
+</span>
+
+                  </header>
+      
+                  <div class="content" id="content55342682" bis_skin_checked="1">What is the recommended settings for eurusd?&nbsp;</div>
+
+
+                </div>
+
+
+
+                <div class="options" bis_skin_checked="1">
+                <span id="complain_55342682"><a href="javascript:complaintInline(55342682,6,17,6)" rel="nofollow">complain</a></span><span id="reply_55342682"> | <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" rel="nofollow" onclick="quoteInline(&#39;55342682&#39;);">reply</a></span>
+
+                </div>
+               </article>
+            </div>
+              <div class="comment" id="comment_55347603" bis_skin_checked="1">
+              <article id="comment_55347603">
+                  <aside>
+                    <div class="user" bis_skin_checked="1"><div class="frame" bis_skin_checked="1"><div class="bg" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/6532960b-f75b.png" srcset="https://c.mql5.com/avatar/2023/10/6532960b-f75b_big.png 2x" alt="AW Trading Software Limited" title="AW Trading Software Limited" data-user-login="NechaevRealle" loading="lazy" width="60" height="60"></div></div><span title="Rating">185065</span></div>
+
+                 </aside>
+
+                <div class="text" bis_skin_checked="1">
+                  <header>
+                      <span id="author_info_55347603" style="font-weight: bold;"><a class="author" href="https://www.mql5.com/en/users/nechaevrealle">Alexander Nechaev</a></span>
+                      
+                      <span class="comment__date" id="date_55347603" data-date-create="2024.12.10 15:42" data-date-modify="" title="Created"><time datetime="2024-12-10T15:42Z">2024.12.10 23:42</time></span>
+                                            
+                      
+                      
+<a class="permalink" title="Permanent link" href="https://www.mql5.com/en/blogs/post/749585#comment_55347603" rel="nofollow" onclick="return false;">#9</a>                        &nbsp;<span class="commands"><span class="command newMessageLink"><a title="Send a private message to Alexander Nechaev" href="https://www.mql5.com/en/users/i.Andy/messages" onclick="if(window.openChatWith){window.openChatWith(&#39;nechaevrealle&#39;,1985088,&#39;Alexander Nechaev&#39;);return false;}if(window.doPost) { window.doPost(null,&#39;/en/users/i.andy/messages&#39;,null,{&#39;user&#39;:&#39;NechaevRealle&#39;}); return false; }"></a></span>
+</span>
+
+                  </header>
+      
+                  <div class="content" id="content55347603" bis_skin_checked="1"><div class="fquote" bis_skin_checked="1"> <strong><span style="color:#42639C;">Ismael Naceda Lumagui <a href="https://www.mql5.com/en/blogs/post/749585#comment_55342682">#</a></span>:</strong><br> What is the recommended settings for eurusd?&nbsp; </div> <p>Hello,</p> <p><br></p> <p>Unfortunately, we do not have recommended settings, as this is a specific product aimed at recovery, so the settings individually depend on the situation of each trader.&nbsp;</p> <p>Write me a private message and I will write you my recommendations.</p> <p><br></p> <p>Best regards.&nbsp;</p></div>
+
+
+                </div>
+
+
+
+                <div class="options" bis_skin_checked="1">
+                <span id="complain_55347603"><a href="javascript:complaintInline(55347603,6,17,6)" rel="nofollow">complain</a></span><span id="reply_55347603"> | <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" rel="nofollow" onclick="quoteInline(&#39;55347603&#39;);">reply</a></span>
+
+                </div>
+               </article>
+            </div>
+</div>
+
+<div class="ui complaint-window" id="complaint_window" style="display: none;" bis_skin_checked="1">
+<script type="text/javascript">/*<![CDATA[*/ if(! window.V) var V=[]; /*]]>*/</script>
+<form method="POST" action="https://www.mql5.com/en/blogs/post/749585" id="complaintForm" onsubmit="var result = Validate(this); if(result) { preventDoubleSubmit(this); } return result;" autocomplete="off">    <div class="complaint-window__item" bis_skin_checked="1">
+      <div class="complaint-window__title" bis_skin_checked="1">Message contains:</div>
+      <div class="select" bis_skin_checked="1">
+        <select name="complaint_reason_select" id="complaint_reason_select" onchange="$(&#39;complaint_reason&#39;).value=&#39;&#39;;$(&#39;complaint_reason&#39;).disabled=this.value==500?null:&#39;disabled&#39;;CalculateFieldLength($(&#39;complaint_reason&#39;),&#39;complaint_char_counter&#39;,3,150,$(&#39;complaint_reason_select&#39;).value==500);">
+            <option value="0">Spam</option>
+            <option value="1">Abuse</option>
+            <option value="2">Advertisement</option>
+            <option value="500">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="complaint-window__item" bis_skin_checked="1">
+      <div class="complaint-window__title" bis_skin_checked="1">Comment:</div>
+      <div class="complaint-window__count" bis_skin_checked="1"><span id="complaint_char_counter"></span>&nbsp;characters</div>
+      <div class="complaint-window__editor" bis_skin_checked="1">
+        <textarea id="complaint_reason" name="complaint_reason" disabled="disabled" rows="3" onkeyup="CalculateFieldLength(this,&#39;complaint_char_counter&#39;,3,150,$(&#39;complaint_reason_select&#39;).value==500);" onchange="CalculateFieldLength(this,&#39;complaint_char_counter&#39;,3,150,$(&#39;complaint_reason_select&#39;).value==500);" title="Complaint"></textarea>
+      </div>
+      <div id="complaint_info" bis_skin_checked="1">
+        <script type="text/javascript" id="validate_complaint_reason">/*<![CDATA[*/ mqGlobal.AddOnReady(function() {V.push(['complaint_reason',2,'The length must range from 3 to 150 characters.',3,150]);}); /*]]>*/</script>
+        <span id="complaint_error" class="field-validation-error" style="display: none;">Error ocured. Try send complaint later.</span>
+      </div>
+    </div>
+    <div class="complaint-window__item complaint-window__btns" bis_skin_checked="1">
+
+      <input type="submit" class="button button_green" value="Save" onclick="SendComplaint(); return false;">
+
+      <button type="button" class="button button_white" value="Cancel" onclick="CloseComplaintForm();">Cancel</button>
+    </div>
+</form></div>
+
+
+  
+
+          <div style="margin: 10px;" bis_skin_checked="1">
+            <a href="https://www.mql5.com/en/blogs" class="forum-root" title="Root"></a>
+            <a href="https://www.mql5.com/en/blogs/trading" class="forum-category" title="Category: My Trading"></a>
+            <div style="float: right" bis_skin_checked="1">
+                <a href="https://www.mql5.com/en/blogs/post/749585#edit_form" class="newComment" style="text-decoration: none; border-bottom: 1px dotted;" onclick="return toggleNewMessage();" title="New comment">Your comment</a>
+            </div>
+          </div>
+        </div>
+        <div style="margin: 0 8px" bis_skin_checked="1">
+          <a id="edit_form"></a>
+          <div id="newmessage" style="display: none; padding: 0 8px; margin: 10px -8px 0 -8px; overflow: hidden" bis_skin_checked="1">
+            
+
+<script type="text/javascript">/*<![CDATA[*/ if(! window.V) var V=[]; /*]]>*/</script>
+<form method="POST" action="https://www.mql5.com/en/comments/6/749585/0/handleComment/page1/20-9" onsubmit="var result = Validate(this); if(result) { preventDoubleSubmit(this); } return result;" autocomplete="off" enctype="multipart/form-data"><input type="hidden" name="__signature" value="de3883fc75a25d9762e1c9595cf3a697">
+  <div bis_skin_checked="1">
+    <input type="hidden" value="0" id="edit_id" name="id">
+    <input type="hidden" value="12733" name="parent_id">
+    <input type="hidden" value="" name="return_path">
+<script type="text/javascript" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/dalet.en.dca62dcebf03479706b28b93cb2f74aa.js"></script><div class="dalet__container dalet-https" style="width: 100%; height: 400px;" bis_skin_checked="1"><div class="dalet__editor-area" bis_skin_checked="1"><textarea id="body" autocomplete="off" name="body" style="display: none;" class="dalet__textarea" spellcheck="false"></textarea><div id="body_toolbar_panel" class="dalet__float-panel dalet__float-panel_toolbar" bis_skin_checked="1"><div class="patch" bis_skin_checked="1"></div><form action="javascript:void(0);"></form><div class="dalet__button-area" bis_skin_checked="1"><input type="button" value="Cancel" class="button button_white"><input type="button" name="DaletInsertButton" id="body_dalet-btn-insertbutton" value="Insert" class="button"></div></div><div id="body_toolbar_panel_storage" style="display: none;" bis_skin_checked="1"></div><iframe id="dalet_body" class="dalet__editor" frameborder="0" src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/saved_resource.html"></iframe><input type="hidden" name="rte_frame_uid" value="WHITI"><div class="autosave-indicator" style="display: none;" bis_skin_checked="1"></div><div class="dalet__drag-and-drop dalet__drag-and-drop_hidden" bis_skin_checked="1"><span class="dalet__drag-and-drop__title">Upload video or image</span></div></div><div class="dalet__toolbar" id="toolbar_body" bis_skin_checked="1"><div id="body_dalet-btn-undo" class="dalet__btn_disabled dalet__btn dalet__btn_undo" title="Undo (Ctrl+Z)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_undo"></i></div><div id="body_dalet-btn-redo" class="dalet__btn_disabled dalet__btn dalet__btn_redo" title="Redo (Ctrl+Y)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_redo"></i></div><span class="dalet__separator"></span><div class="dalet__group" bis_skin_checked="1"><div id="body_dalet-btn-unorderedlist" class="dalet__group__btn-active dalet__btn dalet__btn_unorderedlist" title="Bulleted list" bis_skin_checked="1"><i class="dalet__icon dalet__icon_unorderedlist"></i></div><div id="body_dalet-btn-orderedlist" class="dalet__btn dalet__btn_orderedlist" title="Numbered list" bis_skin_checked="1"><i class="dalet__icon dalet__icon_orderedlist"></i></div><div class="dalet__group__arrow" bis_skin_checked="1"><div class="dalet__icon dalet__icon_arrow" bis_skin_checked="1"></div></div></div><div class="dalet__group" bis_skin_checked="1"><div id="body_dalet-btn-indent" class="dalet__group__btn-active dalet__btn dalet__btn_indent" title="Increase indent" bis_skin_checked="1"><i class="dalet__icon dalet__icon_indent"></i></div><div id="body_dalet-btn-outdent" class="dalet__btn dalet__btn_outdent" title="Decrease indent" bis_skin_checked="1"><i class="dalet__icon dalet__icon_outdent"></i></div><div class="dalet__group__arrow" bis_skin_checked="1"><div class="dalet__icon dalet__icon_arrow" bis_skin_checked="1"></div></div></div><span class="dalet__separator"></span><div id="body_dalet-btn-hr" class="dalet__btn dalet__btn_hr" title="Horizontal line (Ctrl+H)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_hr"></i></div><div id="body_dalet-btn-link" class="dalet__btn dalet__btn_link" title="Link (Ctrl+K)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_link"></i></div><div id="body_dalet-btn-user" class="dalet__btn dalet__btn_user" title="User link (Alt+U)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_user"></i></div><div id="body_dalet-btn-image" class="dalet__btn dalet__btn_image" title="Image (Alt+I)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_image"></i></div><div id="body_dalet-btn-uploadvideo" class="dalet__btn dalet__btn_uploadvideo" title="Upload video in *.MP4, *.WebM format" bis_skin_checked="1"><i class="dalet__icon dalet__icon_uploadvideo"></i></div><div id="body_dalet-btn-video" class="dalet__btn dalet__btn_video" title="Video" bis_skin_checked="1"><i class="dalet__icon dalet__icon_video"></i></div><div id="body_dalet-btn-table" class="dalet__btn dalet__btn_table" title="Insert table (Alt+T)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_table"></i></div><div id="body_dalet-btn-sourcecode" class="dalet__btn dalet__btn_sourcecode" title="Code (Alt+S)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_sourcecode"></i></div><div id="body_dalet-btn-chart" class="dalet__btn dalet__btn_chart" title="Chart" bis_skin_checked="1"><i class="dalet__icon dalet__icon_chart"></i></div><span class="dalet__separator"></span><div class="dalet__btn_list dalet__btn_styles" id="body_dalet-btn-styles" title="Style" bis_skin_checked="1"><i class="dalet__icon dalet__icon_styles"></i><span class="dalet__btn-arrow"><i class="dalet__icon dalet__icon_arrow"></i></span></div><div class="dalet__group" bis_skin_checked="1"><div id="body_dalet-btn-bold" class="dalet__group__btn-active dalet__btn dalet__btn_bold" title="Bold (Ctrl+B)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_bold"></i></div><div id="body_dalet-btn-italic" class="dalet__btn dalet__btn_italic" title="Italic Ctrl+I" bis_skin_checked="1"><i class="dalet__icon dalet__icon_italic"></i></div><div id="body_dalet-btn-underline" class="dalet__btn dalet__btn_underline" title="Underline Ctrl+U" bis_skin_checked="1"><i class="dalet__icon dalet__icon_underline"></i></div><div class="dalet__group__arrow" bis_skin_checked="1"><div class="dalet__icon dalet__icon_arrow" bis_skin_checked="1"></div></div></div><div id="body_dalet-btn-fontcolor" class="dalet__btn_list dalet__btn_fontcolor" title="Text color" bis_skin_checked="1"><span class="dalet_color-mark" style="background-color: rgb(0, 0, 0);"></span><i class="dalet__icon dalet__icon_fontcolor"></i><span class="dalet__btn-arrow"><i class="dalet__icon dalet__icon_arrow"></i></span></div><div id="body_dalet-btn-backgroundcolor" class="dalet__btn_list dalet__btn_backgroundcolor" title="Background color" bis_skin_checked="1"><span class="dalet_color-mark" style="background-color: rgb(255, 255, 255);"></span><i class="dalet__icon dalet__icon_backgroundcolor"></i><span class="dalet__btn-arrow"><i class="dalet__icon dalet__icon_arrow"></i></span></div><span class="dalet__separator"></span><div class="dalet__group" bis_skin_checked="1"><div id="body_dalet-btn-alignleft" class="dalet__group__btn-active dalet__btn dalet__btn_alignleft" title="Left justify (Ctrl+L)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_alignleft"></i></div><div id="body_dalet-btn-aligncenter" class="dalet__btn dalet__btn_aligncenter" title="Center justify (Ctrl+E)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_aligncenter"></i></div><div id="body_dalet-btn-alignright" class="dalet__btn dalet__btn_alignright" title="Right justify (Ctrl+R)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_alignright"></i></div><div id="body_dalet-btn-alignjustify" class="dalet__btn dalet__btn_alignjustify" title="Block justify(Ctrl+J)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_alignjustify"></i></div><div class="dalet__group__arrow" bis_skin_checked="1"><div class="dalet__icon dalet__icon_arrow" bis_skin_checked="1"></div></div></div><span class="dalet__separator"></span><div class="dalet__group" bis_skin_checked="1"><div id="body_dalet-btn-clearstyles" class="dalet__group__btn-active dalet__btn dalet__btn_clearstyles" title="Clear styles (Ctrl+/)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_clearstyles"></i></div><div id="body_dalet-btn-insertfrompocket" class="dalet__btn dalet__btn_insertfrompocket" title="Insert from pocket/internal clipboard" bis_skin_checked="1"><i class="dalet__icon dalet__icon_insertfrompocket"></i></div><div id="body_dalet-btn-autosave" class="dalet__btn_list dalet__btn_autosave" title="Autosaving" bis_skin_checked="1"><i class="dalet__icon dalet__icon_autosave"></i><span class="dalet__btn-arrow"><i class="dalet__icon dalet__icon_arrow"></i></span></div><div class="dalet__group__arrow" bis_skin_checked="1"><div class="dalet__icon dalet__icon_arrow" bis_skin_checked="1"></div></div></div><span class="dalet__separator"></span><div class="dalet__btn dalet__btn_translate" id="body_dalet-btn-translate" title="Translate the content into another language" bis_skin_checked="1"><div class="dalet__translate__btn" bis_skin_checked="1"><span class="dalet__translate__label">Translate into</span><span class="dalet__translate__caption">EN</span></div><span class="dalet__btn-arrow"><i class="dalet__icon dalet__icon_arrow"></i></span></div><span class="dalet__separator"></span><div id="body_dalet-btn-mode" class="dalet__btn dalet__btn_mode" title="Editing mode (F12)" bis_skin_checked="1"><i class="dalet__icon dalet__icon_mode"></i></div><span class="dalet__separator"></span><div id="body_dalet-btn-fullscreen" class="dalet__btn dalet__btn_fullscreen" title="Expand" bis_skin_checked="1"><i class="dalet__icon dalet__icon_fullscreen"></i></div></div><div class="dalet__float-panel dalet__float-panel_styles" style="display: none;" bis_skin_checked="1"><div class="dalet__styles-panel__col" bis_skin_checked="1"><div class="dalet__styles-panel__item" data-index="-1" bis_skin_checked="1">Normal text<span class="dalet__float-panel__hotkey">(Ctrl+1)</span></div><div data-index="0" class="dalet__styles-panel__item" bis_skin_checked="1"><h3>Heading</h3><span class="dalet__float-panel__hotkey">(Ctrl+2)</span></div><div data-index="4" class="dalet__styles-panel__item" bis_skin_checked="1"><span class="stroke">Strikeout</span><span class="dalet__float-panel__hotkey">(Ctrl+6)</span></div><div data-index="5" class="dalet__styles-panel__item" bis_skin_checked="1"><span class="important">Important</span><span class="dalet__float-panel__hotkey">(Ctrl+7)</span></div><div data-index="6" class="dalet__styles-panel__item" bis_skin_checked="1"><span class="small">Small</span><span class="dalet__float-panel__hotkey">(Ctrl+8)</span></div></div><div class="dalet__styles-panel__col dalet__styles-panel__col_right" bis_skin_checked="1"><div data-index="1" class="dalet__styles-panel__item" bis_skin_checked="1"><div class="fquote" bis_skin_checked="1">Quotation</div><span class="dalet__float-panel__hotkey">(Ctrl+3)</span></div><div data-index="2" class="dalet__styles-panel__item" bis_skin_checked="1"><div class="atten" bis_skin_checked="1">Warning</div><span class="dalet__float-panel__hotkey">(Ctrl+4)</span></div><div data-index="3" class="dalet__styles-panel__item" bis_skin_checked="1"><div class="code" bis_skin_checked="1">Code</div><span class="dalet__float-panel__hotkey">(Ctrl+5)</span></div></div></div><div class="dalet__float-panel dalet__float-panel_translate" style="display: none;" bis_skin_checked="1"><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">EN</i> English</div><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">CN</i> Chinese</div><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">RU</i> Russian</div><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">ES</i> Spanish</div><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">PT</i> Portuguese</div><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">JA</i> Japanese</div><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">DE</i> German</div><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">KO</i> Korean</div><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">FR</i> French</div><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">IT</i> Italian</div><div class="dalet__translate__item" bis_skin_checked="1"><i class="dalet__float-panel__label">TR</i> Turkish</div></div></div><script type="text/javascript">if(! window.RTE) window.RTE = [];window.RTE.push({id:'body',style:['https://c.mql5.com/styles/core.0c57de90bcc74f90847def0eb79c0a40.css'],formatBlock:true,styleAlign:true,imageWidth:750,movieUpload:null,noMedia:false,userSearch:true,uid:'WHITI',addUserClick:true,uploadVideo:true,staticHost:'https://c.mql5.com',https:true,toolbar:['Undo','Redo','-',['UnorderedList','OrderedList'],['Indent','Outdent'],'-','Hr','Link','User','Image','UploadVideo','Video','Table','SourceCode','Chart','-','Styles',['Bold','Italic','Underline'],'FontColor','BackgroundColor','-',['AlignLeft','AlignCenter','AlignRight','AlignJustify'],'-',['ClearStyles','InsertFromPocket','AutoSave'],'-','Translate','-','Mode','-','FullScreen'],symbols:[['NVDA','NVIDIA Corporation'],['AAPL','Apple Inc'],['GOOGL','Alphabet Inc - Class A'],['MSFT','Microsoft Corporation'],['AMZN','Amazon.com Inc'],['AVGO','Broadcom Inc'],['META','Meta Platforms Inc - Class A'],['TSM','Taiwan Semiconductor Manufacturing Company Ltd'],['TSLA','Tesla Inc'],['LLY','Eli Lilly and Company']],symbolsUrl:'/en/quotes/symbols/quick',chartsHost:'metatraderweb.app'});</script>      <div class="editorError" bis_skin_checked="1">
+        <script type="text/javascript" id="validate_body">/*<![CDATA[*/ mqGlobal.AddOnReady(function() {V.push(['body',1,'Enter the text of your post']);});mqGlobal.AddOnReady(function() {V.push(['body',17,'Enter the text of your post']);});mqGlobal.AddOnReady(function() {V.push(['body',2,'Message may not exceed 64000 characters',0,64000]);});mqGlobal.AddOnReady(function() {V.push(['body',13,'MQL5.com is upgrading... Do not refresh the page and try to save your changes a few minutes later.']);}); /*]]>*/</script>
+      </div>
+  <div class="comment-edit__bottom ui" bis_skin_checked="1">
+    <div id="multiattaches" style="text-align: left;" class="floatedAttaches" bis_skin_checked="1">
+  
+  <a id="newAttaches_link" href="javascript: void(openAttachments(&#39;multiattaches&#39;,&#39;newAttaches&#39;))" class="attachLink" title="Attach a file">Attach file</a><div id="newAttaches" style="display: none;" bis_skin_checked="1"><div id="at_1" bis_skin_checked="1"><input type="file" name="attachedFile" id="_1" class="attachInput" size="63" accept=".zip,.txt,.log,.mqh,.ex5,.mq5,.mq4,.mqproj,.ex4,.mt5,.set,.tpl,.cl,.py,.sqlite,.csv,.ini,.ipynb,.onnx,.gif,.png,.jpg,.jpeg,.mp4,.webm"></div></div>
+  <p id="newAttaches_info" class="new-attaches__info">Attach up to 32 files maximum 16 Mb per upload&nbsp;(.zip .txt .log .mqh .ex5 .mq5 .mq4 .mqproj .ex4 .mt5 .set .tpl .cl .py .sqlite .csv .ini .ipynb .onnx .gif .png .jpg .jpeg .mp4 .webm)</p>
+</div>
+
+<script type="text/javascript">
+        mqGlobal.AddOnLoad(function() {
+              window.deleteLabel = "delete";
+              Attach.AllowedExtensions = '.zip,.txt,.log,.mqh,.ex5,.mq5,.mq4,.mqproj,.ex4,.mt5,.set,.tpl,.cl,.py,.sqlite,.csv,.ini,.ipynb,.onnx,.gif,.png,.jpg,.jpeg,.mp4,.webm';
+              Attach.alowedExtensionsLabel = 'Invalid file format';
+              Attach.MaxSize = 16 * 1024 * 1024;
+              Attach.maxSizeLabel = "The file size exceeds the maximum allowed value";
+              Attach.createNewContainer();
+            });
+</script>
+
+    <div style="text-align: left;" bis_skin_checked="1"><script type="text/javascript" id="validate_attachedFile">/*<![CDATA[*/ mqGlobal.AddOnReady(function() {V.push(['attachedFile',16,'The \'{filename}\' file size ({filesize}) exceeds the maximum allowed value',16777216]);}); /*]]>*/</script></div>
+    <span style="display: block;" id="edit_cnew_cmd">
+        <span class="followRules">Please follow the <a href="https://www.mql5.com/en/about/terms" target="_blank">rules</a></span>
+      <input type="submit" name="addComment" class="button button_green button_small" value="Add your comment" title="Add your comment">
+    </span>
+    <span style="display: none;" id="edit_csave_cmd">
+      <input type="submit" name="updateComment" class="buttonActive" style="width: 150px;" value="Update">
+      <input type="button" onclick="return toggleNewMessage();" class="buttonInactive" style="width: 150px;" value="Cancel">
+    </span>
+  </div>
+    <div style="clear: both;" bis_skin_checked="1"></div>
+  </div>
+    
+</form>
+
+          </div>
+        </div>
+        <div class="twoColumns limited" bis_skin_checked="1">
+          
+
+    <div class="blogPostItem short" bis_skin_checked="1">
+      <div class="container" bis_skin_checked="1">
+        <div class="avatar" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/688389c9-851a.png" alt="" loading="lazy" width="60" height="60"></div>
+        <h2><a href="https://www.mql5.com/en/blogs/post/766127">📉 Fiscal Stability — Why Government Budget Health Shapes Currency Strength</a></h2>
+
+          <div class="blogPostInfo" bis_skin_checked="1">
+            <a class="category" href="https://www.mql5.com/en/blogs/other">Other</a>
+            <ul class="info">
+              <li title="Views"><i class="icon views"></i>37</li>
+              <li title="Comments"><i class="icon comments"></i>0</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+    <div class="blogPostItem short" bis_skin_checked="1">
+      <div class="container" bis_skin_checked="1">
+        <div class="avatar" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/69012c0a-7e09.png" alt="" loading="lazy" width="60" height="60"></div>
+        <h2><a href="https://www.mql5.com/en/blogs/post/766125">90% Growth in Under 2 Months — Real Results from Spready TripleEdge EA</a></h2>
+
+          <div class="blogPostInfo" bis_skin_checked="1">
+            <a class="category" href="https://www.mql5.com/en/blogs/trading/statistics">Statistics</a>
+            <ul class="info">
+              <li title="Views"><i class="icon views"></i>27</li>
+              <li title="Comments"><i class="icon comments"></i>0</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+    <div class="blogPostItem short" bis_skin_checked="1">
+      <div class="container" bis_skin_checked="1">
+        <div class="avatar" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/68a57ef6-61db.png" alt="" loading="lazy" width="60" height="60"></div>
+        <h2><a href="https://www.mql5.com/en/blogs/post/766112">Real account analysis. Questionable subsystems in the GoldBaron strategy</a></h2>
+
+          <div class="blogPostInfo" bis_skin_checked="1">
+            <a class="category" href="https://www.mql5.com/en/blogs/trading/strategies">Trading Strategies</a>
+            <ul class="info">
+              <li title="Views"><i class="icon views"></i>30</li>
+              <li title="Comments"><i class="icon comments"></i>0</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+    <div class="blogPostItem short" bis_skin_checked="1">
+      <div class="container" bis_skin_checked="1">
+        <div class="avatar" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/69012c0a-7e09.png" alt="" loading="lazy" width="60" height="60"></div>
+        <h2><a href="https://www.mql5.com/en/blogs/post/766111">3 Months Free VPS + Verified Profits — Limited Offer with Spready TripleEdge EA</a></h2>
+
+          <div class="blogPostInfo" bis_skin_checked="1">
+            <a class="category" href="https://www.mql5.com/en/blogs/trading/statistics">Statistics</a>
+            <ul class="info">
+              <li title="Views"><i class="icon views"></i>24</li>
+              <li title="Comments"><i class="icon comments"></i>0</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+    <div class="blogPostItem short" bis_skin_checked="1">
+      <div class="container" bis_skin_checked="1">
+        <div class="avatar" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/693bb5be-af90.png" alt="" loading="lazy" width="60" height="60"></div>
+        <h2><a href="https://www.mql5.com/en/blogs/post/766108">Day 5: Scalping Gold the Smart Way — A Practical Live Market Breakdown (With Real Trades)</a></h2>
+
+          <div class="blogPostInfo" bis_skin_checked="1">
+            <a class="category" href="https://www.mql5.com/en/blogs/trading/strategies">Trading Strategies</a>
+            <ul class="info">
+              <li title="Views"><i class="icon views"></i>40</li>
+              <li title="Comments"><i class="icon comments"></i>0</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+    <div class="blogPostItem short" bis_skin_checked="1">
+      <div class="container" bis_skin_checked="1">
+        <div class="avatar" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/69379cff-f5c0.png" alt="" loading="lazy" width="60" height="60"></div>
+        <h2><a href="https://www.mql5.com/en/blogs/post/766104">Started a New Copy Trading Signal with My Private EA</a></h2>
+
+          <div class="blogPostInfo" bis_skin_checked="1">
+            <a class="category" href="https://www.mql5.com/en/blogs/analytics/trading-systems">Trading Systems</a>
+            <ul class="info">
+              <li title="Views"><i class="icon views"></i>33</li>
+              <li title="Comments"><i class="icon comments"></i>0</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+    <div class="blogPostItem short" bis_skin_checked="1">
+      <div class="container" bis_skin_checked="1">
+        <div class="avatar" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/688389c9-851a.png" alt="" loading="lazy" width="60" height="60"></div>
+        <h2><a href="https://www.mql5.com/en/blogs/post/766102">🌙 The Risk of Trading During Low-Liquidity Hours (and Why It Destroys Stops)</a></h2>
+
+          <div class="blogPostInfo" bis_skin_checked="1">
+            <a class="category" href="https://www.mql5.com/en/blogs/other">Other</a>
+            <ul class="info">
+              <li title="Views"><i class="icon views"></i>33</li>
+              <li title="Comments"><i class="icon comments"></i>0</li>
+                <li title="Like"><i class="icon likes"></i>1</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+    <div class="blogPostItem short" bis_skin_checked="1">
+      <div class="container" bis_skin_checked="1">
+        <div class="avatar" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/63216744-30a7.jpg" alt="" loading="lazy" width="60" height="60"></div>
+        <h2><a href="https://www.mql5.com/en/blogs/post/766092">50% discounts on all apps !!!</a></h2>
+
+          <div class="blogPostInfo" bis_skin_checked="1">
+            <a class="category" href="https://www.mql5.com/en/blogs/other">Other</a>
+            <ul class="info">
+              <li title="Views"><i class="icon views"></i>27</li>
+              <li title="Comments"><i class="icon comments"></i>0</li>
+                <li title="Like"><i class="icon likes"></i>1</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+    <div class="blogPostItem short" bis_skin_checked="1">
+      <div class="container" bis_skin_checked="1">
+        <div class="avatar" bis_skin_checked="1"><img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/68dbf214-07e7.png" alt="" loading="lazy" width="60" height="60"></div>
+        <h2><a href="https://www.mql5.com/en/blogs/post/766087">I Just Gave My Trading Robot a "Brain"</a></h2>
+
+          <div class="blogPostInfo" bis_skin_checked="1">
+            <a class="category" href="https://www.mql5.com/en/blogs/analytics">Analytics &amp; Forecasts</a>
+            <ul class="info">
+              <li title="Views"><i class="icon views"></i>49</li>
+              <li title="Comments"><i class="icon comments"></i>0</li>
+            </ul>
+          </div>
+      </div>
+    </div>
+
+        </div>
+    <div style="height: 1px; overflow: hidden; clear: both;" bis_skin_checked="1"></div>
+  </div>    <div class="column right" bis_skin_checked="1">
+      
+  <ul class="thumbs">
+      <li>
+        <a href="https://www.mql5.com/en/blogs/post/766038" class="image">
+            <i class="views" title="Views">308</i>
+            <img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/splash-preview-766038-1765448306.png" alt="Professional Smart Trading System PSTS" title="Professional Smart Trading System PSTS" loading="lazy" width="280" height="180"><br>
+          Professional Smart Trading System PSTS
+        </a>
+      </li>
+      <li>
+        <a href="https://www.mql5.com/en/blogs/post/765977" class="image">
+            <i class="views" title="Views">348</i>
+            <img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/splash-preview-765977.jpg" alt="Top 5 High-Impact Economic Events This Week (December 8–12, 2025)" title="Top 5 High-Impact Economic Events This Week (December 8–12, 2025)" loading="lazy" width="280" height="180"><br>
+          Top 5 High-Impact Economic Events This Week (December 8–12, 2025)
+        </a>
+      </li>
+      <li>
+        <a href="https://www.mql5.com/en/blogs/post/766042" class="image">
+            <i class="views" title="Views">107</i>
+            <img src="./Instructions for setting up and testing the AW Recovery Expert Advisor_files/splash-preview-766042-1765383835.png" alt="🏦 Banking Sector Stress — The Warning Signal That Can Break a Currency" title="🏦 Banking Sector Stress — The Warning Signal That Can Break a Currency" loading="lazy" width="280" height="180"><br>
+          🏦 Banking Sector Stress — The Warning Signal That Can Break a Currency
+        </a>
+      </li>
+  </ul>
+
+  <ul class="tags">
+      <li><a href="https://www.mql5.com/en/blogs/tags/forex">forex</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/technicalanalysis">technical analysis</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/175">eurusd</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/eurusd">EUR/USD</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/176">gbpusd</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/gold">gold</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/179">usdjpy</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/gbpusd">GBP/USD</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/usdjpy">usd/jpy</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/1860">usd</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/trading">Trading</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/584">AUD/USD</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/230">usd/chf</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/sp500">S&amp;P 500</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/202">forecast</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/usdcad">usd/cad</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/fed">Fed</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/bitcoin">bitcoin</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/21425">Fxwirepro</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/dax">dax</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/fundamentalanalysis">fundamental analysis</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/16445">VistaBrokers</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/40965">Gold spot ($)</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/40966">Silver spot ($)</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/40958">Crude Oil (WTI)</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/14730">USD/TRY</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/177">audusd</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/4796">EUR</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/forexnews">forex news</a></li>
+      <li><a href="https://www.mql5.com/en/blogs/tags/ecb">ECB</a></li>
+  </ul>
+
+    </div>
+</div>
+
+    </article>
+  </main>
+
+    <footer aria-hidden="true">
+
+
+<div aria-hidden="true" class="footer  desktop" id="footer" bis_skin_checked="1">
+  <ul class="links  links_desktop">
+      <li id="navFooterCommunity">
+        <b>MQL5.community</b>
+        <nav>
+          <ul>
+            <li><a href="https://web.metatrader.app/terminal?mode=demo&amp;lang=en" target="_blank" rel="nofollow noopener" data-fz-event="MQL5+Footer+Trading">Online trading / WebTerminal</a></li>
+            <li><a href="https://www.mql5.com/en/code" data-fz-event="MQL5+Footer+CodeBase">Free technical indicators and robots</a></li>
+            <li><a href="https://www.mql5.com/en/articles" data-fz-event="MQL5+Footer+Articles">Articles about programming and trading</a></li>
+            <li><a href="https://www.mql5.com/en/job" data-fz-event="MQL5+Footer+Job">Order trading robots on the Freelance</a></li>
+            <li><a href="https://www.mql5.com/en/market" data-fz-event="MQL5+Footer+Market">Market of Expert Advisors and applications	</a></li>
+            <li><a href="https://www.mql5.com/en/signals" data-fz-event="MQL5+Footer+Signals">Follow forex signals</a></li>
+            <li><a href="https://www.mql5.com/en/vps" data-fz-event="MQL5+Footer+VPS">Low latency forex VPS</a></li>
+            <li><a href="https://www.mql5.com/en/forum" data-fz-event="MQL5+Footer+Forum">Traders forum</a></li>
+            <li><a href="https://www.mql5.com/en/blogs" data-fz-event="MQL5+Footer+Blogs">Trading blogs</a></li>
+            <li><a rel="nofollow" href="https://www.mql5.com/en/charts" data-fz-event="MQL5+Footer+Charts">Charts</a></li>
+            <li><a href="https://www.mql5.com/en/widgets" data-fz-event="MQL5+Footer+Widgets">Free widgets</a></li>
+          </ul>
+        </nav>
+      </li>
+      <li id="navFooterMt5">
+        <b>MetaTrader 5</b>
+        <nav>
+          <ul>
+            <li><a rel="nofollow noopener" href="https://www.metatrader5.com/" data-fz-event="MQL5+Footer+MetaTrader+5"><span class="nobr">MetaTrader 5</span> Trading Platform</a></li>
+            <li><a rel="nofollow noopener" href="https://www.metatrader5.com/en/releasenotes" data-fz-event="MQL5+Footer+MetaTrader+5"><span class="nobr">MetaTrader 5</span> latest updates</a></li>
+            <li><a rel="nofollow noopener" href="https://www.metatrader5.com/en/news" data-fz-event="MQL5+Footer+MetaTrader+5">News, implementations and technology</a></li>
+            <li><a rel="nofollow noopener" href="https://www.metatrader5.com/en/terminal/help" data-fz-event="MQL5+Footer+MetaTrader+5"><span class="nobr">MetaTrader 5</span> User Manual</a></li>
+            <li><a href="https://www.mql5.com/en/docs" data-fz-event="MQL5+Footer+Docs">MQL5 language of trading strategies</a></li>
+            <li><a rel="nofollow noopener" href="https://cloud.mql5.com/" data-fz-event="MQL5+Footer+Cloud">MQL5 Cloud Network</a></li>
+            <li><a rel="noopener" href="https://forge.mql5.io/?lang=en" data-fz-event="MQL5+Footer+Forge" target="_blank">MQL5 Algo Forge</a></li>
+              <li><a rel="nofollow noopener" href="https://download.mql5.com/cdn/web/metaquotes.ltd/mt5/mt5setup.exe?utm_source=www.mql5.com&amp;utm_campaign=download" data-fz-event="MetaTrader+5+Desktop+Download+Footer">Download <span class="nobr">MetaTrader 5</span></a></li>
+              <li><a rel="nofollow noopener" href="https://www.metatrader5.com/en/terminal/help/start_advanced/installation" data-fz-event="MQL5+Footer+MetaTrader+5">Install Platform</a></li>
+              <li><a rel="nofollow noopener" href="https://www.metatrader5.com/en/terminal/help/start_advanced/deinstallation" data-fz-event="MQL5+Footer+MetaTrader+5">Uninstall Platform</a></li>
+          </ul>
+        </nav>
+
+      </li>
+    <li id="navFooterWebsite">
+        <b>Website</b>
+        <nav>
+          <ul>
+            <li><a rel="nofollow" href="https://www.mql5.com/en/about" data-fz-event="MQL5+Footer+About">About</a></li>
+              <li><a href="https://www.mql5.com/en/wall" data-fz-event="MQL5+Footer+Wall">Timeline</a></li>
+            <li><a rel="nofollow" href="https://www.mql5.com/en/about/terms" data-fz-event="MQL5+Footer+About">Terms and Conditions</a></li>
+            <li><a rel="nofollow" href="https://www.mql5.com/en/about/autopayments" data-fz-event="MQL5+Footer+About">Recurring Payment Agreement</a></li>
+            <li><a rel="nofollow" href="https://www.mql5.com/en/about/agencyagreement" data-fz-event="MQL5+Footer+About">Agency Agreement – Offer</a></li>
+            <li><a rel="nofollow" href="https://www.mql5.com/en/about/privacy" data-fz-event="MQL5+Footer+About">Privacy and Data Protection Policy</a></li>
+            <li><a rel="nofollow" href="https://www.mql5.com/en/about/cookies" data-fz-event="MQL5+Footer+About">Cookies Policy</a></li>
+            <li>
+                <a rel="nofollow" href="https://www.mql5.com/en/contact" data-fz-event="MQL5+Footer+Contacts">Contacts and requests</a>
+            </li>
+          </ul>
+        </nav>
+    </li>
+
+      <li>
+        <div class="footer__products" bis_skin_checked="1">
+            <div class="footer__product" bis_skin_checked="1">
+              <a target="_blank" rel="nofollow noopener" href="https://www.metatrader5.com/" class="footer__product-name">MetaTrader 5</a>
+              <div class="footer__product-links" bis_skin_checked="1">
+              <a rel="nofollow noopener" href="https://download.mql5.com/cdn/web/metaquotes.ltd/mt5/mt5setup.exe?utm_source=www.mql5.com&amp;utm_campaign=download" class="icon windows" data-fz-event="MetaTrader+5+Desktop+Download+Footer"><div class="footer__product-link-hint footer__product-link-hint-short" bis_skin_checked="1">Download MetaTrader 5 for Windows</div></a>
+              <a rel="nofollow noopener" href="https://download.mql5.com/cdn/web/metaquotes.ltd/mt5/MetaTrader5.pkg.zip?utm_source=www.mql5.com&amp;utm_campaign=download" class="icon macos" data-fz-event="MetaTrader+5+Desktop+Download+Footer"><div class="footer__product-link-hint footer__product-link-hint-short" bis_skin_checked="1">Download MetaTrader 5 for MacOS</div></a>
+              <a rel="nofollow noopener" href="https://www.mql5.com/en/articles/625?utm_source=www.mql5.com&amp;utm_campaign=download" class="icon linux" data-fz-event="MetaTrader+5+Desktop+Download+Footer"><div class="footer__product-link-hint footer__product-link-hint-short" bis_skin_checked="1">Download MetaTrader 5 for Linux</div></a>
+              <a rel="nofollow noopener" href="https://web.metatrader.app/terminal?mode=demo&amp;lang=en" class="icon web"><div class="footer__product-link-hint footer__product-link-hint-short" bis_skin_checked="1">Open MetaTrader 5 WebTerminal</div></a>
+              <a rel="nofollow noopener" href="https://download.mql5.com/cdn/mobile/mt5/ios?utm_source=www.mql5.com&amp;utm_campaign=install.metaquotes&amp;hl=en" class="icon ios" data-fz-event="MetaTrader+5+iOS+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/j1YndT0ELP9.png)" bis_skin_checked="1">Scan to install from App Store</div></a>
+              <a rel="nofollow noopener" href="https://download.mql5.com/cdn/mobile/mt5/android?utm_source=www.mql5.com&amp;utm_campaign=install.metaquotes&amp;hl=en" class="icon android" data-fz-event="MetaTrader+5+Android+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/kLq7f3IjZ79.png)" bis_skin_checked="1">Scan to install from Google Play</div></a>
+              <a rel="nofollow noopener" href="https://download.mql5.com/cdn/mobile/mt5/android/app-gallery?utm_source=www.mql5.com&amp;utm_campaign=install.metaquotes" class="icon huawei" data-fz-event="MetaTrader+5+Android+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/ZgFlSvLLbPn.png)" bis_skin_checked="1">Scan to install from Huawei AppGallery</div></a>
+              <a rel="nofollow noopener" href="https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/metatrader5.apk?utm_source=www.mql5.com&amp;utm_campaign=install.metaquotes" class="icon ark" data-fz-event="MetaTrader+5+Android+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/Lwmc2V3KIPA.png)" bis_skin_checked="1">Scan to get Android APK file</div></a>
+              </div>
+            </div>
+            <div bis_skin_checked="1">
+              <div class="footer__product" bis_skin_checked="1">
+                <a target="_blank" rel="nofollow noopener" href="https://www.metatrader5.com/en/news/2270" class="footer__product-name">MQL5 Channels</a>
+                <div class="footer__product-links" bis_skin_checked="1">
+                <a rel="nofollow noopener" href="https://download.mql5.com/cdn/mobile/mql5.channels/ios?utm_source=www.mql5.com&amp;utm_campaign=download&amp;hl=en" class="icon ios" data-fz-event="MQL5+Channels+iOS+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/bZWf3CH-YUJ.png)" bis_skin_checked="1">Scan to install from App Store</div></a>
+                <a rel="nofollow noopener" href="https://download.mql5.com/cdn/mobile/mql5.channels/android?utm_source=www.mql5.com&amp;utm_campaign=download&amp;hl=en" class="icon android" data-fz-event="MQL5+Channels+Android+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/3DvQEZrJjjS.png)" bis_skin_checked="1">Scan to install from Google Play</div></a>
+                <a rel="nofollow noopener" href="https://download.mql5.com/cdn/mobile/mql5.channels/android/app-gallery?utm_source=www.mql5.com&amp;utm_campaign=download" class="icon huawei" data-fz-event="MQL5+Channels+Android+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/S7GLL6gia6p.png)" bis_skin_checked="1">Scan to install from Huawei AppGallery</div></a>
+                <a rel="nofollow noopener" href="https://download.mql5.com/cdn/web/metaquotes.software.corp/mql5channels/mql5channels.apk?utm_source=www.mql5.com&amp;utm_campaign=download" class="icon ark" data-fz-event="MQL5+Channels+Android+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/GavZeMoJbi7.png)" bis_skin_checked="1">Scan to get Android APK file</div></a>
+                </div>
+              </div>
+              <div class="footer__product" bis_skin_checked="1">
+                <a target="_blank" rel="nofollow noopener" href="https://www.tradays.com/en/download?utm_source=www.mql5.com&amp;utm_campaign=download" data-fz-event="MQL5+Footer+Download+Tradays" class="footer__product-name">Economic Calendar</a>
+                <div class="footer__product-links" bis_skin_checked="1">
+                <a rel="nofollow noopener" href="https://download.mql5.com/cdn/mobile/tradays/ios?utm_source=www.mql5.com&amp;utm_campaign=download&amp;hl=en" class="icon ios" data-fz-event="Tradays+iOS+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/CA1pc8ZTZxp.png)" bis_skin_checked="1">Scan to install from App Store</div></a>
+                <a rel="nofollow noopener" href="https://download.mql5.com/cdn/mobile/tradays/android?utm_source=www.mql5.com&amp;utm_campaign=download&amp;hl=en" class="icon android" data-fz-event="Tradays+Android+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/BR4u5sNJgnA.png)" bis_skin_checked="1">Scan to install from Google Play</div></a>
+                <a rel="nofollow noopener" href="https://download.mql5.com/cdn/mobile/tradays/android/app-gallery?utm_source=www.mql5.com&amp;utm_campaign=download" class="icon huawei" data-fz-event="Tradays+Android+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/CDbwhhgyysd.png)" bis_skin_checked="1">Scan to install from Huawei AppGallery</div></a>
+                <a rel="nofollow noopener" href="https://download.mql5.com/cdn/web/metaquotes.software.corp/tradays/tradays.apk?utm_source=www.mql5.com&amp;utm_campaign=download" class="icon ark" data-fz-event="Tradays+Android+Download+Footer"><div class="footer__product-link-hint" style="background-image: url(https://c.mql5.com/qr/VGWFy3By-09.png)" bis_skin_checked="1">Scan to get Android APK file</div></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer__networks" bis_skin_checked="1">
+            <div class="footer__networks-list" bis_skin_checked="1">
+            <a href="https://www.facebook.com/mql5.community/" target="_blank" rel="nofollow" title="Facebook"><i class="icons-networks icons-networks_fb"></i></a><a href="https://t.me/mql5dev" target="_blank" rel="nofollow" title="Telegram"><i class="icons-networks icons-networks_tg"></i></a><a href="https://x.com/mql5com" target="_blank" rel="nofollow" title="X (Twitter)"><i class="icons-networks icons-networks_tw"></i></a>
+            </div>
+            <span>Follow us on socials for top articles and CodeBase updates</span>
+          </div>
+  
+        <div class="footer__other" bis_skin_checked="1">
+          <div class="footer__not-a-broker" bis_skin_checked="1">Not a broker, no real trading accounts</div>
+          <div class="copyright" bis_skin_checked="1">35 Dodekanisou str, Germasogeia, 4043,&nbsp;Limassol,&nbsp;Cyprus</div>
+          <div class="copyright" bis_skin_checked="1">Copyright 2000-2025, <span class="nobr">MetaQuotes Ltd</span></div>
+        </div>
+      </li>
+  </ul>
+</div>
+
+
+    </footer>
+
+  <div class="shadow-layer" id="layer" bis_skin_checked="1"></div>
+</div>
+
+
+<script type="text/javascript">
+  (function(a,e,f,g,b,c,d){a[b]||(a.FintezaCoreObject=b,a[b]=a[b]||function(){(a[b].q=a[b].q||[]).push(arguments)},a[b].l=1*new Date,c=e.createElement(f),d=e.getElementsByTagName(f)[0],c.async=!0,c.defer=!0,c.src=g,d&&d.parentNode&&d.parentNode.insertBefore(c,d))})
+      (window, document, "script", "/ff/core.js", "fz");
+  window.fz("register", "website", {
+      id: "sqjxkxkswybhifrohpyooonwgbvsfzmayq",
+    trackLinks: true
+  });
+  </script>
+
+<script type="text/javascript">
+           mqGlobal.AddOnReady(function () { Mql5Cookie.init('mql5.com','5070361201397822742'); });
+mqGlobal.AddOnReady(function(){if(!window.likes){window.likes=new Likes();}});function editCommentInline(commentId){if(!window.editComment)return false;return editComment(commentId);}function quoteInline(commentId){if(!window.quote_forum)return false;return quote_forum(commentId);}function complaintInline(itemId,moduleId,typeId,parentModuleId){if(!window.showComplaintForm)return false;return showComplaintForm(itemId,moduleId,typeId,parentModuleId,'70355a113bcc393b0826fb1fe65cca52');}mqGlobal.AddOnReady(function(){if(!window.translateManager){window.translateManager=new Translate(undefined,'Error: failed to translate. Please try again later.');}TimeTagProcessor();if(!window.shareManager){window.shareManager=new Share();}window.Pocket=new PocketManager();if(document.querySelectorAll){var translateElements=document.querySelectorAll(".translateMenu");if(translateElements){var i=0,count=translateElements.length;for(i;i<count;i++){(function(i){var contentid=dataset(translateElements[i],"contentid"),sourcelang=dataset(translateElements[i],"sourcelang"),targetlang=dataset(translateElements[i],"targetlang"),moduleid=parseInt(dataset(translateElements[i],"moduleid")),typeid=parseInt(dataset(translateElements[i],"typeid")),entityid=parseInt(dataset(translateElements[i],"entityid"));Core.AddHandler(translateElements[i],"mouseover",function(){return translateManager.SetMenu(this,contentid,sourcelang,targetlang,moduleid,typeid,entityid);});})(i);}}}});function FriendsShort(title){this.showFriendWindow=function(linkObj,userLogin,fullName,worksAt,rating,imagePath,country,position,website){var container=createElement(null,"DIV",{className:"friendInfoContainer ui complaint-window"});var leftContainer=createElement(container,"DIV",{className:"leftContainer"});var avatarBlock=createElement(leftContainer,"DIV",{className:"user"});createElement(avatarBlock,"IMG",{src:imagePath,width:"60",height:"60",title:fullName,loading:"lazy"});var ratingBlock=createElement(avatarBlock,"SPAN",{className:"rating"});ratingBlock.innerHTML=rating;var detailsContainer=createElement(container,"DIV",{className:"detailsContainer"});var nameBlock=createElement(detailsContainer,"P",{className:"name"});nameBlock.innerHTML=fullName;var worksBlock=createElement(detailsContainer,"P",{className:"works"});if(position!=""||worksAt!="")worksBlock.innerHTML+="Works: ";if(position!="")worksBlock.innerText+=position;if(worksAt!=""){if(position!="")worksBlock.innerHTML+=" ";worksBlock.innerText+="at ";if(website!=""){createElement(worksBlock,"A",{target:"_blank",href:website}).innerText=worksAt;}}var livesBlock=createElement(detailsContainer,"P",{className:"lives"});if(country!="")livesBlock.innerHTML="Lives: "+country;createElement(container,"DIV",{className:"splitter"});var operationsContainer=createElement(container,"DIV",{className:"complaint-window__item complaint-window__btns"});createElement(operationsContainer,"button",{className:"button button_green",innerText:"Add",onclick:function(){addFriendRequest(linkObj,userLogin);}});var initialWidth=360;var initialHeight=105;window.Dialog.show(title,container,initialWidth,initialHeight,function(){Dialog.hide();},null,false,null,false,'fixed');};function addFriendRequest(linkObj,friendLogin){Ajax.post('/en/users/i.andy/friends',{user:friendLogin,act:"add",__signature:'1e1091db66a6aa1ffb239daddca464b1'},false,{onready:function(){linkObj.parentNode.style.display="none";Dialog.hide();}});};}window.friendShort=new FriendsShort('Do you want to add user to friends?');mqGlobal.AddOnLoad(function(){MQTE.HotKey("body",13,true,false,false,function(){MQTE.Flush("body");var buttons=$('newmessage').getElementsByTagName("input");if(!buttons||!buttons.length)return;for(var i=0;i<buttons.length;i++){if(buttons[i].type=="submit"&&(buttons[i].clientWidth||buttons[i].offsetWidth)){buttons[i].click();break;}}});});mqGlobal.AddOnReady(function(){{window.initHeaderSearch('','https://www.mql5.com/en/search');}});</script><script type="text/javascript">mqGlobal.AddOnReady(function(){window.initSuggestions("headerSearchKeyword","en","https://search.mql5.com/api/query","https://www.mql5.com/en/users_search/suggestion");});mqGlobal.AddOnReady(function(){var localization={"friendsHeader":"Friends","newMessageHeader":"Add new message","userToLabel":"Part of the user's name or login","gotoMessages":"Go to messages list","gotoMessage":"Go to chat","otherUsersHeader":"Other users","returnToList":"Return to messages list (ESC)","closeChat":"Close chat","attachedFilesHeader":"Attached files","attachFileTitle":"Attach file","sendMessageTitle":"Reply","expandWindow":"Expand chat window","minimizeWindow":"Reduce chat window","searchUserPlaceholder":"Part of the user's name or login","searchChannelPlaceholder":"Channels","errorOccuredMessage":"An error occurred. Please try again later.","systemYouInvited":"You have been invited to chat {0}","systemUserInvited":"{0} invited {1}","systemChatUserLeft":"{0} left the chat","systemChatUserRemoved":"{0} removed {1} from chat","systemChannelUserRemoved":"{0} removed {1} from channel","systemChannelPublic":"{0} made the channel public","systemChannelPrivate":"{0} made the channel private","systemChatLimited":"{0} made the chat limited","systemChatUnlimited":"{0} made the chat not limited","systemChatClosed":"{0} closed the chat","systemChannelClosed":"Channel is now closed","systemChatReopened":"{0} reopened the chat","systemChannelReopened":"Channel reopened","systemChatRename":"{0} changed the chat name to {1}","systemChannelRename":"Channel name changed to {0}","systemChatCreate":"{0} created the chat {1}","systemChannelCreate":"Channel {0} created","systemChatPrivate":"{0} made the chat private","systemChatPublic":"{0} made the chat public","subscribe":"Subscribe","unsubscribe":"Unsubscribe","ofSubscribers":"{0} subscribers","ofUsers":"{0} members","messages":"Messages","users":"Users","channels":"Channels","unreadMessages":"Unread messages","deleteChat":"delete","deleteChatConfirm":"Are you sure want to delete chat?","allChats":"All chats","privateChats":"Private chats","groupChats":"Group chats","allChatsShort":"All","privateChatsShort":"Private","groupChatsShort":"Groups","recommendedChannels":"Recommended channels","members":"Members","popularChannels":"Popular channels","startChat":"Start a chat","createChannel":"Create a channel","createGroup":"Create a group","searchPlaceholder":"Enter part of a name or login of a person you want to chat with","en":"English","ru":"Русский","de":"Deutsch","es":"Español","pt":"Português","ja":"日本語","zh":"中文","ar":"العربية","tr":"Türkçe","it":"Italiano","ko":"한국어","fr":"Français","foundEmpty":"Your search did not match any documents","close":"Close","chatNamePlaceholder":"Set a short and clear name","channelCreation":"Creating a channel","image":"Image","fileDesc":"JPG, GIF or PNG image","chatDesc":"Description","channelDescPlaceholder":"Add a clear channel description","links":"Links","linksPlaceholder":"Comma-separated list of links","channelLanguage":"Channel language","addMembers":"Add members","selectedMembers":"{0} members selected","append":"Add","groupCreation":"Creating a group","publicChannel":"Public channel","privateChannel":"Private channel","publicChannelDesc":"Any user is able to find the channel and subscribe to it","privateChannelDesc":"The channel is available to invited users only","urlChannel":"Channel link","channelAvatar":"Channel avatar","selectFile":"Select a file","delete":"delete","channel":"Channel","group":"Group chat","edit":"edit","editing":"Editing","inviteLinkExists":"This link name is already in use, please set another one","save":"Save","publicChat":"Public chat","privateChat":"Private chat","publicChatDesc":"Any user is able to find and join the chat","privateChatDesc":"The chat is available to invited users only","open":"Open","chatLanguage":"Chat language","isLimited":"Regular chat users can add new members","emptyAddMember":"To add new members, use the search","mql5Members":"MQL5 members","friends":"Friends","friendAddToChat":"Add to friends","friendAddToChatNote":"Add the user as a friend. You can see activity of your friends on the website and communicate with them easily.","admin":"Administrator","owner":"Owner","moderator":"Moderator","notSupportedWebsoket":"WebSocket is not supported by this browser.","cancel":"Cancel","deletion":"Deletion","deletionTextChannel":"Do you really want to delete the {0} channel?","deletionTextGroup":"Do you really want to delete the {0} group?","deleteUpper":"Delete","block":"-","unblock":"-","emptyChatsList":'<p>You have no chats.</p><p>Please use the search or create a new chat on the <a href="{0}">messages</a> page</p>',"deletedAccount":"Deleted account","other":"Other","groupDescPlaceholder":"Add a clear chat description","widgetErrorOccured":"An error occurred. Please try again later.","pleaseUploadAvatar":"Please upload the chat avatar","pleaseUploadAvatarChannel":"Please upload the channel avatar","countParticipants":"{0} participants","countFollower":"{0} followers","info":"Info","errorImageEx":"The image does not meet the requirements. The image format should be JPG, GIF or PNG","user":"User","update":"Update","permissions":"Permissions","reader":"Reader","postMessages":"Post messages","read":"Read","canWriteMessages":"The user can write messages","adminDesc":"Administrator permissions allow the user to: <ul> <li>grant any permissions to users</li> <li>remove any users</li> <li>delete messages</li> <li>edit chat / channel information</li> <li>close chat / channel</li> </ul>","moderatorDesc":"Moderator permissions allow the user to: <ul> <li>grant users permissions lower than moderator</li> <li>remove users with lower permissions</li> <li>delete messages</li> </ul>","urlChannelDesc":"Only letters, numbers, minus and underscore are allowed. The minimum length is {0} symbols, a letter should come first","chatNotFound":'<h3>Chat not found</h3> <p><a href="{0}" onclick="{1}" class="{2}">Main chat page</a></p>',"collapse":"Collapse","showOriginal":"Show original","errorLoading":"Unable to download attachment","next":"Next","previous":"Previous","linkToImg":"Link to the image","linkToVideo":"Link to the video","search":"Search","chats":"Chats","subscribed":"Subscribed","add":"Send","message":"Message","emptyMessageError":"Message cannot be empty","longMessageError":"The message should not exceed {0} characters","invalidType":"Incorrect file type","deleteAllMessagesFromConfirm":"Do you really want to delete all messages from {0}?","complaint":"complain","abuse":"Abuse","advert":"Advertisement","spam":"Spam","complaintTitle":"Complaint","complaintOther":"Other","complaintError":"Error ocured. Try send complaint later.","complaintSuccess":"Your complaint has been successfully sent!","complaintLength":"The length must range from {0} to {1} characters.","characters":"characters","comment":"Comment","complaintContains":"Message contains","back":"Back","new":"New","my":"My","popular":"Popular","recommended":"Recommended","unsubscribeConfirmChannel":"Do you really want to leave the {0} channel?","unsubscribeConfirmGroup":"Do you really want to leave the {0} group?","chatEdit":"Edit","writer":"Author","avatarErrorSize":"The image size should be at least {0}x{1} pixels","friendWaitingPair":"You'll be able to start a chat once the user confirms your friend request","emptyChatsListShort":'<p>You have no chats.</p><p>Please use the search or create a new chat</p>',"errorUserNonChatablePrivacyFriends":"The user has enabled incoming personal messages from friends only","privacyOnlyFriendsWithName":"{0} has enabled incoming personal messages from friends only","zoomIn":"zoom in","zoomOut":"zoom out","friendWaitingPairWithName":"You'll be able to start a chat once {0} confirms your friend request","dragAndDrop":"Upload","reportSpam":"Report spam","addingMembers":"Adding members","you":"You","commentAuthor":"Comment author","notAllowedAdd":"Users {0} have disabled the ability to add them to groups and channels","replyMessage":"Reply","editMembers":"Edit members","membersCount":"Members ({0})","searchMembers":"Searching for members","errorUserNotFound":"User not found","membersList":"List of members","urlGroup":"Group URL","usefulLinks":"Useful links","copied":"Copied","type":"Type","management":"Management","closeGroup":"Close group","closeChannel":"Close channel","openGroup":"Open group","openChannel":"Open channel","maxNumberFiles":"Maximum number of attached files: {0}","noMessagesYet":"No messages here yet. Send a message to start a chat.","upload":"Upload","addUsefulLinks":"Add useful links:","nameNSymbols":"Name (up to {0} characters)","descNSymbols":"Description (up to {0} characters)","isLimitedShort":"Users are able to add members","created":"Created","deleted":"Deleted","join":"Join","leaveGroup":"Leave group","notifications":"Notifications","mute":"Mute","unmute":"Unmute","andMoreMembers":"and {0} more members","retry":"Retry","verified":"Verified","blockUser":"Block user","unblockUser":"Unblock user","errorUserBannedAnotherUser":"Cannot send message. This user has blocked you.","warningUserBlocked":"You have blocked this user. They cannot send you messages.",};var chatSettings={'mode':'prod','complaintKey':"2c169c318b76f47ae4428c0055a95cdd",'userId':"99E8250000000000",'userLogin':'i.Andy','language':'en','playSounds':true,'accessLevel':1,'friendlyHosts':[".gov.uk",".wikipedia.org",".zerohedge.com",".metatrader4.com",".metatrader5.com",".mql4.com",".mql5.com",".mql5.com",".mql5.dev",".metaquotes.net",".teamwox.com",".forex-tsd.com",".finteza.com",".adp.com",".bakerhughes.com",".bankofcanada.ca",".bankofengland.co.uk",".bba.org.uk",".boj.or.jp",".brc.org.uk",".cao.go.jp",".chicagofed.org",".cmhc-schl.gc.ca",".conference-board.org",".consilium.europa.eu",".customs.go.jp",".dallasfed.org",".ec.europa.eu",".ecb.europa.eu",".halifax.co.uk",".iea.org",".imf.org",".instituteforsupplymanagement.org",".ivey.uwo.ca",".kansascityfed.org",".markiteconomics.com",".meti.go.jp",".mhlw.go.jp",".mni-indicators.com",".mof.go.jp",".nahb.org",".nar.realtor",".newyorkfed.org",".niesr.ac.uk",".opec.org",".parliament.uk",".philadelphiafed.org",".rics.org",".stat.go.jp",".statcan.gc.ca",".us.spindices.com",".zew.de",".youtube.com",".lst.to",".tradays.com",".linkedin.com"],'readonly':false,'type':0,'token':'ae5cb895e351654557f2170c2b2cbb62b9a12762216f0d610f7b84fe4bcfd5d4595b888d29ce78acbdd4cd647e4d372b3f2e7c87404b3524debc9a077397caff695e43ef91cd80916471e3cc175532228133b120a2684819f44b7fc2cb1ebcb12dfd7470273e6f50a517fa6f879f0ada','url':'msg3.mql5.com','servers':['msg3.mql5.com'],'version':28,'uniq':"5070361201397822742",'localization':localization,};window.initChatWidget(chatSettings);});if(!window.dateToTextLocalization)window.dateToTextLocalization={'m1':'{0} minute ago','m2':'{0} minutes ago','m3':'{0} minutes ago','h1':'{0} hour ago','h2':'{0} hours ago','h3':'{0} hours ago','lang':'en'};window.fz("show","bfogggabsofabcpxuzmgaibarmaxasdrj");function complaintInline(itemId,moduleId,typeId,parentModuleId){if(!window.showComplaintForm)return false;return showComplaintForm(itemId,moduleId,typeId,parentModuleId,'47e047fada08eafaf5ac7680ce5da6b3');};      if (typeof Attach !== "undefined")
+        Attach.setAcceptFilter(".zip, .txt, .log, .mqh, .ex5, .mq5, .mq4, .mqproj, .ex4, .mt5, .set, .tpl, .cl, .py, .sqlite, .csv, .ini, .ipynb, .onnx, .gif, .png, .jpg, .jpeg, .mp4, .webm");
+  </script>
+
+
+
+<script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "OnlineStore",
+      "name": "MQL5 Community",
+      "parentOrganization": "MetaQuotes Ltd",
+      "legalName":"MQL5",
+      "alternateName": "MetaQuotes Language 5",
+      "brand": "MQL5",
+      "url": "https://www.mql5.com",
+      "logo": "https://c.mql5.com/i/community/logo_mql5-2.png",
+      "description": "MQL5: language of trade strategies built-in the MetaTrader 5 Trading Platform, allows writing your own trading robots, technical indicators, scripts and libraries of functions",
+          "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer service",
+          "contactOption": "Chat",
+          "areaServed": "Worldwide",
+          "availableLanguage":["en","zh","es","pt","ja","de","ko","fr","it","tr"]
+          },
+      "sameAs": [
+          "https://www.facebook.com/mql5.community",
+          "https://www.x.com/mql5com",
+          "https://www.youtube.com/user/MetaQuotesOfficial",
+          "https://t.me/mql5dev"
+          ]
+    }
+, 
+{"@context":"https://schema.org","@type":"ItemList","itemListElement":[{"@type":"SiteNavigationElement","position":1,"name":"Forum","description":"Discussions of trading strategies and algorithmic trading. MQL5.community  the largest forex forum","url":"https://www.mql5.com/en/forum","children":[]},{"@type":"SiteNavigationElement","position":2,"name":"Market","description":"MetaTrader Market - a Market of trading robots, indicators, trading books and magazines","url":"https://www.mql5.com/en/market","children":[]},{"@type":"SiteNavigationElement","position":3,"name":"Signals","description":"Social trading, copy trading and account monitoring with MetaTrader - Trading Signals on MQL5.com","url":"https://www.mql5.com/en/signals","children":[]},{"@type":"SiteNavigationElement","position":4,"name":"Freelance","description":"Order trading robots, technical indicators and algorithmic trading applications. Forex jobs. Freelance on MQL5.com. Hire MetaTrader experts and specialists","url":"https://www.mql5.com/en/job","children":[]},{"@type":"SiteNavigationElement","position":5,"name":"Quotes","description":"","url":"https://www.mql5.com/en/quotes/overview","children":[]},{"@type":"SiteNavigationElement","position":6,"name":"WebTerminal","description":"WebTerminal for the MetaTrader trading platform. Online forex trading.","url":"https://web.metatrader.app/terminal?mode=demo","children":[]},{"@type":"SiteNavigationElement","position":7,"name":"Calendar","description":"","url":"https://www.mql5.com/en/economic-calendar","children":[]},{"@type":"SiteNavigationElement","position":8,"name":"VPS","description":"","url":"https://www.mql5.com/en/vps","children":[]},{"@type":"SiteNavigationElement","position":9,"name":"Articles","description":"","url":"https://www.mql5.com/en/articles","children":[]},{"@type":"SiteNavigationElement","position":10,"name":"CodeBase","description":"Download trading robots, technical indicators and scripts with source code - MQL5 Code Base for MetaTrader 5","url":"https://www.mql5.com/en/code","children":[]},{"@type":"SiteNavigationElement","position":11,"name":"Algo Forge","description":"","url":"https://forge.mql5.io","children":[]},{"@type":"SiteNavigationElement","position":12,"name":"Documentation","description":"MetaQuotes Language 5 (MQL5) Reference - Documentation on MQL5.com","url":"https://www.mql5.com/en/docs","children":[]}]}  
+,
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":"https://www.mql5.com/en/blogs","name":"All Blogs"},{"@type":"ListItem","position":2,"item":"https://www.mql5.com/en/blogs/trading","name":"My Trading"}]}
+,
+{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.mql5.com/en/blogs/post/749585"},"thumbnailUrl":"https://c.mql5.com/6/907/splash-preview-749585-1655919955.png","headline":"Instructions for setting up and testing the AW Recovery Expert Advisor","articleSection":"My Trading","keywords":[],"image":{"@type":"ImageObject","url":"https://c.mql5.com/6/907/splash-preview-749585-1655919955.png","width":1328,"height":248},"datePublished":"2022-06-22T17:46:10","dateModified":"2022-06-22T17:46:10","author":{"@type":"Person","name":"AW Trading Software Limited","url":"https://www.mql5.com/en/users/nechaevrealle"},"publisher":{"@type":"Organization","name":"AW Trading Software Limited","url":"https://aw-trading.com/","logo":{"@type":"ImageObject","url":"https://c.mql5.com/avatar/2023/10/6532960b-f75b.png"}}}
+
+  ]
+</script>
+
+
+<div id="ai-chat-ui-container" style="position: fixed; z-index: 9999; top: 0px; right: 0px; display: none;" bis_skin_checked="1"><div id="ai-chat-icon" style="right: auto; bottom: auto;" bis_skin_checked="1">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H6L4 18V4H20V16Z" fill="currentColor"></path>
+    </svg>
+  </div><div id="ai-chat-window" bis_skin_checked="1">
+    <div id="chat-header" bis_skin_checked="1">
+      <div class="header-content" bis_skin_checked="1">
+        <select id="model-selector" class="model-dropdown">
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
+          <option value="gemini-2.5-pro-preview-05-06">Gemini 2.5 Pro Preview 05-06</option>
+          <option value="gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash Preview 04-17</option>
+          <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash Preview 05-20</option>
+        </select>
+        <button id="theme-toggle" title="Change Theme">🌙</button>
+        <button id="expand-chat">+</button>
+        <button id="close-chat">×</button>
+      </div>
+    </div>
+    <div id="chat-messages" bis_skin_checked="1"></div>
+    <div id="chat-input-container" bis_skin_checked="1">
+      <textarea id="chat-input" placeholder="Enter your message..."></textarea>
+    </div>
+  </div><div id="ai-summarize-icon" bis_skin_checked="1">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM18 20H6V4H13V9H18V20Z" fill="currentColor"></path>
+      <path d="M8 14H16V16H8V14Z" fill="currentColor"></path>
+      <path d="M8 10H16V12H8V10Z" fill="currentColor"></path>
+      <path d="M8 18H12V20H8V18Z" fill="currentColor"></path>
+    </svg>
+  </div><div id="ai-summarize-window" style="display: none;" bis_skin_checked="1">
+    <div id="summarize-header" bis_skin_checked="1">
+      <div class="header-content" bis_skin_checked="1">
+        <select id="summarize-model-selector" class="model-dropdown">
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          <option value="gemini-2.0-flash-preview-image-generation">Gemini 2.0 Flash Preview Image Generation</option>
+          <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
+          <option value="gemini-2.5-pro-preview-05-06">Gemini 2.5 Pro Preview 05-06</option>
+          <option value="gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash Preview 04-17</option>
+          <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash Preview 05-20</option>
+        </select>
+        <button id="theme-toggle-summarize" title="Change Theme">🌙</button>
+        <button id="expand-summarize">+</button>
+        <button id="close-summarize">×</button>
+      </div>
+    </div>
+    <div id="summarize-content" bis_skin_checked="1">
+      <div id="summary-display" bis_skin_checked="1"></div>
+    </div>
+    <div id="summarize-controls-container" bis_skin_checked="1">
+      <div id="custom-prompt-container" bis_skin_checked="1">
+        <textarea id="custom-prompt" placeholder="Enter desired summary style (e.g., &#39;Summarize in 3 sentences&#39;)"></textarea>
+      </div>
+      <div id="summarize-input-container" bis_skin_checked="1">
+        <button id="summarize-button">Summarize Current Page</button>
+      </div>
+    </div>
+  </div></div></body></html>
