@@ -4,15 +4,15 @@
 
 ```yaml
 name: "Auto Compile Check"
-description: "每次修改 MQL5 代碼後自動執行編譯檢查"
+description: "每次修改 MQL4 代碼後自動執行編譯檢查"
 trigger: "file_saved"
-filePattern: "*.mq5"
+filePattern: "*.mq4"
 enabled: true
 ```
 
 ## Hook Logic
 
-當保存 MQL5 文件時，自動執行以下步驟：
+當保存 MQL4 文件時，自動執行以下步驟：
 
 1. 執行 `./compile.sh <filename>` 進行編譯
 2. 如果編譯失敗，自動查看編譯日誌
@@ -26,12 +26,12 @@ enabled: true
 async function autoCompileCheck(context) {
     const { filePath, fileName } = context;
     
-    // 只處理 MQL5 文件
-    if (!fileName.endsWith('.mq5')) {
+    // 只處理 MQL4 文件
+    if (!fileName.endsWith('.mq4')) {
         return;
     }
     
-    console.log(`檢測到 MQL5 文件修改: ${fileName}`);
+    console.log(`檢測到 MQL4 文件修改: ${fileName}`);
     
     try {
         // 執行編譯
@@ -78,8 +78,8 @@ function analyzeCompileErrors(logContent) {
     // 常見錯誤模式
     const errorPatterns = [
         {
-            pattern: /version '([^']+)' is incompatible with MQL5 Market/,
-            message: "版本號格式不符合 MQL5 Market 要求",
+            pattern: /version '([^']+)' is incompatible with MQL4 Market/,
+            message: "版本號格式不符合 MQL4 Market 要求",
             suggestion: "版本號必須是 xxx.yyy 格式（如 1.00, 2.15）",
             autoFix: true,
             fixFunction: fixVersionFormat
@@ -200,7 +200,7 @@ async function applyAutoFixes(filePath, fixes) {
 
 這個 Hook 會在以下情況自動觸發：
 
-1. 保存任何 `.mq5` 文件時
+1. 保存任何 `.mq4` 文件時
 2. 自動執行 `./compile.sh` 進行編譯檢查
 3. 如果編譯失敗，會：
    - 顯示錯誤信息
@@ -222,4 +222,4 @@ async function applyAutoFixes(filePath, fixes) {
 2. **錯誤分析**：自動分析常見錯誤並提供解決建議
 3. **自動修正**：對於格式類錯誤可以一鍵修正
 4. **提高效率**：減少手動編譯和錯誤排查時間
-5. **學習輔助**：通過錯誤分析幫助理解 MQL5 編程規範
+5. **學習輔助**：通過錯誤分析幫助理解 MQL4 編程規範

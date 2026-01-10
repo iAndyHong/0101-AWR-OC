@@ -551,9 +551,37 @@ bool CChartPanelCanvas::Update(bool forceUpdate = false)
    if(!forceUpdate && (currentTime - m_lastUpdate < m_updateInterval)) return false;
    m_lastUpdate = currentTime;
 
-   TradeStatsCanvas buyStats, sellStats;
-   CalculateTradeStats(m_magicNumber, OP_BUY, buyStats);
-   CalculateTradeStats(m_magicNumber, OP_SELL, sellStats);
+   TradeStatsCanvas buyStats = {0}, sellStats = {0};
+   
+   // 單次掃描優化：同時計算多空統計
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+     {
+      if(!OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) continue;
+      if(m_magicNumber > 0 && OrderMagicNumber() != m_magicNumber) continue;
+      if(OrderSymbol() != Symbol()) continue;
+      
+      int type = OrderType();
+      double lots = OrderLots();
+      double p = OrderProfit() + OrderSwap() + OrderCommission();
+      
+      if(type == OP_BUY)
+        {
+         buyStats.lots += lots;
+         buyStats.avgPrice += OrderOpenPrice() * lots;
+         buyStats.profit += p;
+         buyStats.count++;
+        }
+      else if(type == OP_SELL)
+        {
+         sellStats.lots += lots;
+         sellStats.avgPrice += OrderOpenPrice() * lots;
+         sellStats.profit += p;
+         sellStats.count++;
+        }
+     }
+   if(buyStats.lots > 0) buyStats.avgPrice /= buyStats.lots;
+   if(sellStats.lots > 0) sellStats.avgPrice /= sellStats.lots;
+
    double totalLots = buyStats.lots + sellStats.lots;
    double totalProfit = buyStats.profit + sellStats.profit;
    double lotsDiff = buyStats.lots - sellStats.lots;
@@ -561,6 +589,10 @@ bool CChartPanelCanvas::Update(bool forceUpdate = false)
    double balance = AccountBalance();
    double equity = AccountEquity();
    int digits = (int)MarketInfo(Symbol(), MODE_DIGITS);
+
+   SetCurrentProfit(totalProfit);
+   RecordMarginLevel(marginLevel);
+   DrawAvgLines();
 
    m_canvas.Erase(ColorToARGB(clrBlack, 0));
    m_canvas.FillRectangle(0, 0, m_width, m_height, ColorToARGB(m_bgColor, (uchar)m_bgAlpha));

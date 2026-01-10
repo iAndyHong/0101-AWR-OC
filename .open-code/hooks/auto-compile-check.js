@@ -1,6 +1,6 @@
 /**
  * Auto Compile Check Hook
- * 每次修改 MQL5 代碼後自動執行編譯檢查
+ * 每次修改 MQL4 代碼後自動執行編譯檢查
  */
 
 const fs = require('fs').promises;
@@ -13,9 +13,9 @@ const execAsync = promisify(exec);
 // Hook 配置
 const HOOK_CONFIG = {
     name: "Auto Compile Check",
-    description: "每次修改 MQL5 代碼後自動執行編譯檢查",
+    description: "每次修改 MQL4 代碼後自動執行編譯檢查",
     trigger: "file_saved",
-    filePattern: "*.mq5",
+    filePattern: "*.mq4",
     enabled: true
 };
 
@@ -23,12 +23,12 @@ const HOOK_CONFIG = {
 async function autoCompileCheck(context) {
     const { filePath, fileName } = context;
     
-    // 只處理 MQL5 文件
-    if (!fileName.endsWith('.mq5')) {
+    // 只處理 MQL4 文件
+    if (!fileName.endsWith('.mq4')) {
         return;
     }
     
-    console.log(`🔍 檢測到 MQL5 文件修改: ${fileName}`);
+    console.log(`🔍 檢測到 MQL4 文件修改: ${fileName}`);
     
     try {
         // 執行編譯
@@ -135,8 +135,8 @@ function analyzeCompileErrors(logContent) {
     // 常見錯誤模式
     const errorPatterns = [
         {
-            pattern: /version '([^']+)' is incompatible with MQL5 Market/,
-            message: "版本號格式不符合 MQL5 Market 要求",
+            pattern: /version '([^']+)' is incompatible with MQL4 Market/,
+            message: "版本號格式不符合 MQL4 Market 要求",
             suggestion: "版本號必須是 xxx.yyy 格式（如 1.00, 2.15）",
             autoFix: true,
             fixType: 'fixVersionFormat'
@@ -299,8 +299,8 @@ module.exports = {
 if (require.main === module) {
     // 測試用例
     const testContext = {
-        filePath: './Grids Zero - 1.01.mq5',
-        fileName: 'Grids Zero - 1.01.mq5'
+        filePath: './Grids Zero - 1.01.mq4',
+        fileName: 'Grids Zero - 1.01.mq4'
     };
     
     console.log('🧪 測試 Auto Compile Check Hook...');

@@ -238,7 +238,7 @@ int OnInit()
    config.stShowLine      = (ST_ShowLine == YES);
    config.stBullColor     = ST_BullColor;
    config.stBearColor     = ST_BearColor;
-   // Heiken Ashi 參數
+// Heiken Ashi 參數
    config.heikenMaPeriod       = HK_MaPeriod;
    config.heikenMaMethod      = HK_MaMethod;
    config.heikenSignalMode     = HK_SignalMode;

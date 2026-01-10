@@ -20,7 +20,7 @@
 #include "CTimerManager_v2.2.mqh"
 #include "Utils_v2.2.mqh"
 #include "../TradeCore/CTradeCore_v2.2.mqh"
-#include "../TradeCore/CHedgeClose_v2.2.mqh"
+#include "../HedgeClose/CHedgeClose.mqh"
 #include "../TradeCore/CProfitTrailingStop_v2.2.mqh"
 #include "../RecoveryProfit/CRecoveryProfit_v2.2.mqh"
 #include "../UI/CChartPanelCanvas_v2.2.mqh"
@@ -197,7 +197,35 @@ public:
    virtual double         CalculateGridDistance(int level)      { return 500.0; }
    virtual void           OnCustomTimer(int timerId)            { }
    virtual void           OnCustomTick()                        { }
-   virtual void           OnRiskTriggered()                     { }
+   //| 觸發風險控制時的處理
+virtual void           OnRiskTriggered()
+{
+   if(m_status == EA_STATUS_RUNNING)
+   {
+      double profit = GetFloatingProfit();
+      double balance = AccountBalance();
+      double drawdown = (balance > 0) ? (profit / balance) * 100.0 : 0;
+      double lots = GetTotalLots();
+      
+      string reason = "";
+      if(m_maxDrawdown > 0 && drawdown <= -m_maxDrawdown) 
+         reason = StringFormat("達到最大回撤限制 (%.2f%% <= -%.2f%%)", drawdown, m_maxDrawdown);
+      else if(m_maxLots > 0 && lots > m_maxLots)
+         reason = StringFormat("達到最大手數限制 (%.2f > %.2f)", lots, m_maxLots);
+      
+      WriteLog("!!! 風險控制觸發: " + reason);
+      
+      // 在 UI 上顯示警告資訊
+      if(m_enableChartPanel)
+      {
+         m_chartPanel.SetSystemInfo(m_eaName + " [風險觸發]", m_symbol);
+      }
+      
+      // 觸發風險時自動暫停，防止開出更多訂單或邏輯失控
+      m_status = EA_STATUS_ERROR; 
+      WriteLog("EA 狀態已切換為 ERROR，停止核心交易邏輯。");
+   }
+}
 
    //=== 訂單管理（委託給 TradeCore）===
    int                    OpenOrder(int orderType, double lots, string comment = "");
@@ -439,17 +467,23 @@ bool CEACore::ShouldUpdateOrderCache()
 //| 檢查是否應該更新 UI（由 OnTimerCore 呼叫）
 bool CEACore::ShouldUpdateUI()
 {
+   datetime currentTime = TimeCurrent();
+   
    if(IsTesting())
    {
+      // 在測試模式下，每根 K 線至少更新一次，或者每過一段虛擬時間更新一次
       datetime currentBarTime = iTime(m_symbol, 0, 0);
-      if(currentBarTime != m_lastBarTime)
+      bool isNewBar = (currentBarTime != m_lastBarTime);
+      bool isTimeElapsed = (currentTime - m_lastUIPanelUpdate >= m_timer2Interval);
+      
+      if(isNewBar || isTimeElapsed)
       {
          m_lastBarTime = currentBarTime;
          return true;
       }
       return false;
    }
-   return (m_timer2Counter >= m_timer2Interval);
+   return (currentTime - m_lastUIPanelUpdate >= m_timer2Interval);
 }
 
 //| 檢查是否應該更新箭頭（由 OnTimerCore 呼叫）
@@ -657,27 +691,32 @@ void CEACore::OnTickCore()
    UpdateSpreadCache();
    UpdateOrderCache();
 
-   if(!CheckRiskControl())
+   // 風險控制檢查 (改為不立即 return，確保 UI 能更新)
+   bool riskOk = CheckRiskControl();
+   if(!riskOk)
    {
       OnRiskTriggered();
-      return;
    }
 
-   // 獲利追蹤停利檢查
-   if(m_enableProfitTrailing && m_profitTrailing.ShouldClose())
+   // 只有在風險正常時才執行核心交易邏輯
+   if(riskOk)
    {
-      WriteLog("獲利追蹤停利觸發");
-      double profit = HedgeCloseAll();
-      AddProfit(profit);
-      m_profitTrailing.Reset();
+      // 獲利追蹤停利檢查
+      if(m_enableProfitTrailing && m_profitTrailing.ShouldClose())
+      {
+         WriteLog("獲利追蹤停利觸發");
+         double profit = HedgeCloseAll();
+         AddProfit(profit);
+         m_profitTrailing.Reset();
+      }
+
+      OnCustomTick();
+
+      if(m_enableRecoveryProfit)
+         m_recoveryProfit.OnTick();
    }
 
-   OnCustomTick();
-
-   if(m_enableRecoveryProfit)
-      m_recoveryProfit.OnTick();
-
-   // 測試模式：UI/箭頭在 OnTick 更新
+   // 無論風險如何，在測試模式下都要更新 UI
    if(IsTesting())
    {
       if(m_enableArrows && ShouldUpdateArrows())
@@ -687,11 +726,7 @@ void CEACore::OnTickCore()
       }
       if(m_enableChartPanel && ShouldUpdateUI())
       {
-         double accProfit = m_enableRecoveryProfit ? m_recoveryProfit.GetAccumulatedProfit() : m_localAccumulatedProfit;
-         m_chartPanel.SetAccumulatedProfit(accProfit);
-         m_chartPanel.SetTradeInfo(m_magic);
-         m_chartPanel.Update(true);
-         m_lastUIPanelUpdate = TimeCurrent();
+         UpdatePanel(true); // 使用統一的 UpdatePanel 減少冗餘
       }
    }
 
@@ -741,24 +776,19 @@ void CEACore::OnTimerCore()
 
    m_timer2Counter++;
 
-   if(!IsTesting())
-   {
-      if(m_enableChartPanel && m_timer2Counter >= m_timer2Interval)
-      {
-         double accProfit = m_enableRecoveryProfit ? m_recoveryProfit.GetAccumulatedProfit() : m_localAccumulatedProfit;
-         m_chartPanel.SetAccumulatedProfit(accProfit);
-         m_chartPanel.SetTradeInfo(m_magic);
-         m_chartPanel.Update(true);
-         m_lastUIPanelUpdate = TimeCurrent();
-         m_timer2Counter = 0;
-      }
+    if(!IsTesting())
+    {
+       if(m_enableChartPanel && ShouldUpdateUI())
+       {
+          UpdatePanel(true);
+       }
 
-      if(m_enableArrows && ShouldUpdateArrows())
-      {
-         m_arrowManager.ArrowOnTick();
-         m_lastArrowUpdate = TimeCurrent();
-      }
-   }
+       if(m_enableArrows && ShouldUpdateArrows())
+       {
+          m_arrowManager.ArrowOnTick();
+          m_lastArrowUpdate = TimeCurrent();
+       }
+    }
 }
 
 //| 圖表事件
@@ -968,8 +998,13 @@ void CEACore::UpdatePanel(bool forceUpdate = false)
    
    double accProfit = m_enableRecoveryProfit ? m_recoveryProfit.GetAccumulatedProfit() : m_localAccumulatedProfit;
    m_chartPanel.SetAccumulatedProfit(accProfit);
-   m_chartPanel.SetTradeInfo(m_magic);
-   m_chartPanel.Update(forceUpdate);
+   
+   // 這裡直接呼叫 Update，不呼叫 SetTradeInfo 以減少冗餘掃描
+   // 因為 CChartPanelCanvas::Update 內部已經會同步進行資料掃描與統計
+   if(m_chartPanel.Update(forceUpdate))
+   {
+      m_lastUIPanelUpdate = TimeCurrent();
+   }
 }
 
 //| 清理 UI 面板

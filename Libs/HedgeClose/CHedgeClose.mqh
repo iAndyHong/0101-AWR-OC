@@ -38,6 +38,9 @@
 #property version   "1.11"
 #property strict
 
+#ifndef CHEDGECLOSE_MQH
+#define CHEDGECLOSE_MQH
+
 //+------------------------------------------------------------------+
 //| 對沖平倉類別
 //+------------------------------------------------------------------+
@@ -47,17 +50,20 @@ private:
    // 設定參數
    int               m_magicNumber;           // 魔術數字
    string            m_symbol;                // 交易商品
-   int               m_slippage;              // 滑點容許值
-   bool              m_isInitialized;         // 是否已初始化
-   double            m_totalProfit;           // 累計平倉獲利
-   
-   // 內部方法
-   bool              MagicNoCheck(int magic, int orderMagic);
-   bool              PlaceHedge();
-   double            MultCloseBy();
-   double            CloseAllOrders();
-   int               CountRemainingOrders();
-   double            GetOrderProfitByTicket(int ticket);
+    int               m_slippage;              // 滑點容許值
+    string            m_logFile;               // 日誌檔案路徑
+    bool              m_isInitialized;         // 是否已初始化
+    double            m_totalProfit;           // 累計平倉獲利
+    
+    // 內部方法
+    bool              MagicNoCheck(int magic, int orderMagic);
+    bool              PlaceHedge();
+    double            MultCloseBy();
+    double            CloseAllOrders();
+    int               CountRemainingOrders();
+    double            GetOrderProfitByTicket(int ticket);
+    void              WriteLog(string message);
+    string            GetErrorMsg(int error_code);
 
 public:
                      CHedgeClose();
@@ -66,7 +72,8 @@ public:
    // 初始化與清理
    bool              Init(int magicNumber, 
                           int slippage = 30,
-                          string symbol = "");
+                          string symbol = "",
+                          string logFile = "");
    void              Deinit();
    
    // 主要功能 - 返回實際平倉獲利
@@ -84,6 +91,7 @@ CHedgeClose::CHedgeClose()
    m_magicNumber     = 0;
    m_symbol          = "";
    m_slippage        = 30;
+   m_logFile         = "";
    m_isInitialized   = false;
    m_totalProfit     = 0.0;
   }
@@ -101,11 +109,13 @@ CHedgeClose::~CHedgeClose()
 //+------------------------------------------------------------------+
 bool CHedgeClose::Init(int magicNumber, 
                         int slippage = 30,
-                        string symbol = "")
+                        string symbol = "",
+                        string logFile = "")
   {
    m_magicNumber   = magicNumber;
    m_slippage      = slippage;
    m_symbol        = (symbol == "") ? Symbol() : symbol;
+   m_logFile       = logFile;
    m_isInitialized = true;
    m_totalProfit   = 0.0;
    return true;
@@ -158,9 +168,11 @@ bool CHedgeClose::PlaceHedge()
       return true;
    
    // 下對沖單
-   int ticket = (lots > 0) 
-      ? OrderSend(m_symbol, OP_SELL, lots, MarketInfo(m_symbol, MODE_BID), m_slippage, 0, 0, "HEDGE", m_magicNumber, 0, clrNONE)
-      : OrderSend(m_symbol, OP_BUY, -lots, MarketInfo(m_symbol, MODE_ASK), m_slippage, 0, 0, "HEDGE", m_magicNumber, 0, clrNONE);
+   int ticket = 0;
+   if(lots > 0)
+      ticket = OrderSend(m_symbol, OP_SELL, lots, MarketInfo(m_symbol, MODE_BID), m_slippage, 0, 0, "HEDGE", m_magicNumber, 0, clrNONE);
+   else
+      ticket = OrderSend(m_symbol, OP_BUY, -lots, MarketInfo(m_symbol, MODE_ASK), m_slippage, 0, 0, "HEDGE", m_magicNumber, 0, clrNONE);
    
    if(ticket > 0)
      {
@@ -180,56 +192,50 @@ bool CHedgeClose::PlaceHedge()
 double CHedgeClose::MultCloseBy()
   {
    double totalProfit = 0.0;
+   bool foundPair = true;
    
-   for(int i = OrdersTotal() - 1; i > 0; --i)
+   // 使用迴圈取代遞迴，避免 Stack Overflow 與死循環
+   while(foundPair)
      {
-      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES) &&
-         OrderType() < 2 &&
-         OrderSymbol() == m_symbol &&
-         MagicNoCheck(m_magicNumber, OrderMagicNumber()))
+      foundPair = false;
+      int total = OrdersTotal();
+      
+      for(int i = total - 1; i >= 0; i--)
         {
-         int    firstTicket = OrderTicket();
-         int    firstType   = OrderType();
-         
-         // 記錄平倉前的獲利（包含 swap 和 commission）
-         double firstProfit = OrderProfit() + OrderSwap() + OrderCommission();
-         
-         // 尋找反向單
-         for(int j = i - 1; j >= 0; --j)
+         if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES) &&
+            OrderType() < 2 &&
+            OrderSymbol() == m_symbol &&
+            MagicNoCheck(m_magicNumber, OrderMagicNumber()))
            {
-            if(OrderSelect(j, SELECT_BY_POS, MODE_TRADES) &&
-               OrderType() < 2 &&
-               OrderSymbol() == m_symbol &&
-               MagicNoCheck(m_magicNumber, OrderMagicNumber()) &&
-               OrderType() != firstType)
+            int    firstTicket = OrderTicket();
+            int    firstType   = OrderType();
+            double firstProfit = OrderProfit() + OrderSwap() + OrderCommission();
+            
+            // 尋找反向單
+            for(int j = i - 1; j >= 0; j--)
               {
-               int secondTicket = OrderTicket();
-               double secondProfit = OrderProfit() + OrderSwap() + OrderCommission();
-               
-               // 找到反向單，執行對沖平倉
-               if(OrderCloseBy(firstTicket, secondTicket))
+               if(OrderSelect(j, SELECT_BY_POS, MODE_TRADES) &&
+                  OrderType() < 2 &&
+                  OrderSymbol() == m_symbol &&
+                  MagicNoCheck(m_magicNumber, OrderMagicNumber()) &&
+                  OrderType() != firstType)
                  {
-                  // 累計兩張單的獲利
-                  totalProfit += firstProfit + secondProfit;
-                  Print("[CHedgeClose] 對沖平倉: ", firstTicket, " <-> ", secondTicket, 
-                        " 獲利: ", DoubleToString(firstProfit + secondProfit, 2));
+                  int secondTicket = OrderTicket();
+                  double secondProfit = OrderProfit() + OrderSwap() + OrderCommission();
                   
-                  // 遞迴繼續，累加獲利
-                  double recursiveProfit = MultCloseBy();
-                  if(recursiveProfit < -999990)  // 遞迴失敗
-                     return -999999.0;
-                  return totalProfit + recursiveProfit;
-                 }
-               else
-                 {
-                  Print("[CHedgeClose] OrderCloseBy 失敗! Error: ", GetLastError());
-                  return -999999.0;  // 失敗，改用備用方案
+                  if(OrderCloseBy(firstTicket, secondTicket))
+                    {
+                     totalProfit += firstProfit + secondProfit;
+                     foundPair = true;
+                     break; // 找到一對就重置外層迴圈
+                    }
                  }
               }
            }
+         if(foundPair) break;
         }
      }
-   return totalProfit;  // 全部完成
+   return totalProfit;
   }
 
 //+------------------------------------------------------------------+
@@ -301,24 +307,30 @@ double CHedgeClose::Execute()
    m_totalProfit = 0.0;
    Print("[CHedgeClose] 開始執行對沖平倉...");
    
-   // 步驟 1: 下對沖單讓多空平衡
-   if(!PlaceHedge())
-     {
-      Print("[CHedgeClose] 對沖失敗，改用備用平倉");
-      m_totalProfit = CloseAllOrders();
-      Print("[CHedgeClose] 總獲利: ", DoubleToString(m_totalProfit, 2));
-      return m_totalProfit;
-     }
-   
-   // 步驟 2: 遞迴對沖平倉
-   double closeByProfit = MultCloseBy();
-   if(closeByProfit < -999990)
-     {
-      Print("[CHedgeClose] 對沖平倉失敗，改用備用平倉");
-      m_totalProfit = CloseAllOrders();
-      Print("[CHedgeClose] 總獲利: ", DoubleToString(m_totalProfit, 2));
-      return m_totalProfit;
-     }
+    // 步驟 1: 下對沖單讓多空平衡
+    if(!PlaceHedge())
+      {
+       int err = GetLastError();
+       string msg = "對沖平倉失敗，改用備用平倉... | 原因: 無法開啟平衡對沖單, Error Code: " + IntegerToString(err) + " (" + GetErrorMsg(err) + ")";
+       WriteLog(msg);
+       Print(msg);
+       m_totalProfit = CloseAllOrders();
+       Print("[CHedgeClose] 總獲利: ", DoubleToString(m_totalProfit, 2));
+       return m_totalProfit;
+      }
+    
+    // 步驟 2: 遞迴對沖平倉
+    double closeByProfit = MultCloseBy();
+    if(closeByProfit < -999990)
+      {
+       int err = GetLastError();
+       string msg = "對沖平倉失敗，改用備用平倉... | 原因: OrderCloseBy 執行異常, Error Code: " + IntegerToString(err) + " (" + GetErrorMsg(err) + ")";
+       WriteLog(msg);
+       Print(msg);
+       m_totalProfit = CloseAllOrders();
+       Print("[CHedgeClose] 總獲利: ", DoubleToString(m_totalProfit, 2));
+       return m_totalProfit;
+      }
    
    m_totalProfit = closeByProfit;
    
@@ -334,6 +346,48 @@ double CHedgeClose::Execute()
    return m_totalProfit;
   }
 
+void CHedgeClose::WriteLog(string message)
+{
+   Print("[CHedgeClose] " + message);
+   if(m_logFile == "") return;
+   
+   int handle = FileOpen(m_logFile, FILE_READ | FILE_WRITE | FILE_TXT | FILE_ANSI | FILE_SHARE_READ | FILE_SHARE_WRITE);
+   if(handle != INVALID_HANDLE)
+   {
+      FileSeek(handle, 0, SEEK_END);
+      FileWriteString(handle, TimeToString(TimeCurrent(), TIME_DATE | TIME_SECONDS) + " | [CHedgeClose] " + message + "\n");
+      FileClose(handle);
+   }
+}
+
+string CHedgeClose::GetErrorMsg(int error_code)
+{
+   switch(error_code)
+   {
+      case 0:   return "無錯誤";
+      case 1:   return "無錯誤但結果未知";
+      case 2:   return "一般錯誤";
+      case 3:   return "無效的交易參數";
+      case 4:   return "交易伺服器忙碌";
+      case 128: return "交易超時";
+      case 129: return "無效價格";
+      case 130: return "無效停損";
+      case 131: return "無效手數";
+      case 132: return "市場關閉";
+      case 133: return "交易被禁用";
+      case 134: return "資金不足";
+      case 135: return "價格已改變";
+      case 136: return "無報價";
+      case 137: return "經紀商忙碌";
+      case 138: return "重新報價";
+      case 139: return "訂單被鎖定";
+      case 141: return "請求過多";
+      case 146: return "交易上下文忙碌";
+      case 148: return "訂單過多";
+      default:  return "錯誤描述參考 Utils";
+   }
+}
+
 //+------------------------------------------------------------------+
 //| 靜態快速呼叫（一行完成對沖平倉）- 返回實際平倉獲利               |
 //| 適合其他 EA 直接使用，不需要先建立實例和初始化                   |
@@ -346,3 +400,4 @@ double CHedgeClose::CloseAll(int magicNumber, int slippage = 30, string symbol =
    return temp.Execute();
   }
 //+------------------------------------------------------------------+
+#endif

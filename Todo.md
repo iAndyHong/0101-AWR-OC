@@ -1,11 +1,13 @@
 [x] 加入移動停利 Class
 [ ] 趨勢反轉 獲利 鎖定
 [x] 樣板 加入 SuperTrend
-[ ] UI 數據擴張+整合
+[x] UI 數據擴張+整合
 [ ] Wave 版本演算法 加入
-[ ] 順向/逆向網格 再研究
+[x] 順向/逆向網格 再研究
     [ ] 反向突破 網格計數器歸零 問題
 [ ] 動態型自我虧損修復 版本
+[ ] 善加利用 .sisyphus
+
 
 優先處理 (花太多時間在 UI 上了)
 [ ] Recorver 完成 + 測試
@@ -13,8 +15,9 @@
 
 ---
 [ ] 更好用的環境設定
-    [ ] 特別是通用型規則 .kiro/steering/00-language-preference.md
+    [x] 特別是通用型規則 .kiro/steering/00-language-preference.md
 [ ] 如何多工
+[ ] 善加利用 git
 
 ---
 1. [ ] 外部參數再精簡優化

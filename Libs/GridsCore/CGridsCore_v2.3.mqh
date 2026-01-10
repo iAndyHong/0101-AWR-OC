@@ -42,7 +42,7 @@
 #include "../EACore/CEACore_v2.3.mqh"
 
 // 引用子模組
-#include "../TradeCore/CHedgeClose_v2.2.mqh"
+#include "../HedgeClose/CHedgeClose.mqh"
 
 //+------------------------------------------------------------------+
 //| 網格模式枚舉
@@ -459,13 +459,25 @@ void CGridsCore::DrawSuperTrendLine()
 
 void CGridsCore::DrawReversalLine(color line_color)
   {
+   static int lineCount = 0;
+   static string lineNames[50]; // 限制最多保留 50 條反轉線
+   
    string name = "HK_Rev_" + IntegerToString(m_config.magicNumber) + "_" + TimeToString(TimeCurrent(), TIME_DATE|TIME_MINUTES|TIME_SECONDS);
+   
+   // 如果已經存在同名的線（同一秒內多次觸發），則不建立
+   if(ObjectFind(0, name) >= 0) return;
+
    if(ObjectCreate(0, name, OBJ_VLINE, 0, TimeCurrent(), 0))
      {
       ObjectSetInteger(0, name, OBJPROP_COLOR, line_color);
       ObjectSetInteger(0, name, OBJPROP_STYLE, STYLE_DOT);
       ObjectSetInteger(0, name, OBJPROP_WIDTH, 1);
       ObjectSetInteger(0, name, OBJPROP_BACK, true);
+      
+      // 管理快取
+      if(lineNames[lineCount % 50] != "") ObjectDelete(0, lineNames[lineCount % 50]);
+      lineNames[lineCount % 50] = name;
+      lineCount++;
      }
   }
 
@@ -558,6 +570,31 @@ bool CGridsCore::OpenGridOrder(int type, double lots)
    return true;
   }
 
+int CGridsCore::CountGridOrders()
+  {
+   int count = 0;
+   for(int i = 0; i < OrdersTotal(); i++)
+     {
+      if(OrderSelect(i, SELECT_BY_POS) && OrderMagicNumber() == m_config.magicNumber && OrderSymbol() == m_config.symbol)
+         count++;
+     }
+   return count;
+  }
+
+void CGridsCore::UpdateTotalLots()
+  {
+   m_totalBuyLots = 0;
+   m_totalSellLots = 0;
+   for(int i = 0; i < OrdersTotal(); i++)
+     {
+      if(OrderSelect(i, SELECT_BY_POS) && OrderMagicNumber() == m_config.magicNumber && OrderSymbol() == m_config.symbol)
+        {
+         if(OrderType() == OP_BUY) m_totalBuyLots += OrderLots();
+         else if(OrderType() == OP_SELL) m_totalSellLots += OrderLots();
+        }
+     }
+  }
+
 double CGridsCore::CalculateGridProfit(int dir)
   {
    double p = 0;
@@ -578,11 +615,14 @@ double CGridsCore::CloseGridPositions(int dir)
      {
       if(OrderSelect(i, SELECT_BY_POS) && OrderMagicNumber() == m_config.magicNumber && OrderSymbol() == m_config.symbol)
         {
-         if(OrderType() == dir)
-           {
-            p += OrderProfit() + OrderSwap() + OrderCommission();
-            OrderClose(OrderTicket(), OrderLots(), (OrderType() == OP_BUY ? Bid : Ask), m_config.slippage);
-           }
+          if(OrderType() == dir)
+            {
+             p += OrderProfit() + OrderSwap() + OrderCommission();
+             if(!OrderClose(OrderTicket(), OrderLots(), (OrderType() == OP_BUY ? Bid : Ask), m_config.slippage))
+               {
+                WriteLog("[GC] CloseGridPositions failed: " + IntegerToString(OrderTicket()) + " Error: " + IntegerToString(GetLastError()));
+               }
+            }
         }
      }
    return p;
@@ -591,86 +631,132 @@ double CGridsCore::CloseGridPositions(int dir)
 void CGridsCore::Execute(const OrderStats &stats)
   {
    if(!m_initialized) return;
-   if(stats.buyCount == 0 && m_buyGridLevel > 0) { m_buyGridLevel = 0; m_buyBasePrice = 0; m_lastBuyDistLevel = -1; ObjectDelete("GC_Base_BUY_" + IntegerToString(m_config.magicNumber)); }
-   if(stats.sellCount == 0 && m_sellGridLevel > 0) { m_sellGridLevel = 0; m_sellBasePrice = 0; m_lastSellDistLevel = -1; ObjectDelete("GC_Base_SELL_" + IntegerToString(m_config.magicNumber)); }
    
-   m_totalBuyLots = stats.buyLots; m_totalSellLots = stats.sellLots;
-   int sig = GetTrendSignal(); double cp = MarketInfo(m_config.symbol, MODE_BID);
-   bool allow1 = AllowFirstOrder(), isSimp = (m_config.filterMode == FILTER_SIMPLE);
+   // 每一 tick 都同步一次本地統計，確保 UI 資訊與實際倉位同步
+   UpdateTotalLots();
+   int currentBuyCount = 0;
+   int currentSellCount = 0;
+   for(int i = 0; i < OrdersTotal(); i++)
+     {
+      if(OrderSelect(i, SELECT_BY_POS) && OrderMagicNumber() == m_config.magicNumber && OrderSymbol() == m_config.symbol)
+        {
+         if(OrderType() == OP_BUY) currentBuyCount++;
+         else if(OrderType() == OP_SELL) currentSellCount++;
+        }
+     }
+   
+   // 自動修復：若場上無單則重置層級
+   if(currentBuyCount == 0 && m_buyGridLevel > 0) { m_buyGridLevel = 0; m_buyBasePrice = 0; m_lastBuyDistLevel = -1; ObjectDelete("GC_Base_BUY_" + IntegerToString(m_config.magicNumber)); }
+   if(currentSellCount == 0 && m_sellGridLevel > 0) { m_sellGridLevel = 0; m_sellBasePrice = 0; m_lastSellDistLevel = -1; ObjectDelete("GC_Base_SELL_" + IntegerToString(m_config.magicNumber)); }
+   
+   int sig = GetTrendSignal(); 
+   double cp = MarketInfo(m_config.symbol, MODE_BID);
+   bool allow1 = AllowFirstOrder();
+   bool isSimp = (m_config.filterMode == FILTER_SIMPLE);
    datetime curBT = iTime(m_config.symbol, 0, 0);
    datetime curTime = TimeCurrent();
 
+   //--- Heiken Ashi 趨勢反轉處理：鎖利平倉與重置 ---
    if(m_config.filterMode == FILTER_HeikenAshi && m_heikenReversed)
      {
-      double totalProfit = CalculateGridProfit(-1);
+      double currentTotalProfit = CalculateGridProfit(-1);
+      
       if(sig == SIGNAL_BUY)
         {
+         if(currentTotalProfit > 1.0 && (m_buyGridLevel > 0 || m_sellGridLevel > 0)) 
+           { 
+            WriteLog("[GC] Heiken Reversed to BUY | Total Profit: " + DoubleToString(currentTotalProfit, 2) + " | Total Close-out");
+            CloseAllPositions(); 
+            ResetBaskets(); 
+           }
+         
          m_buyBasePrice = cp;
+         m_buyGridLevel = 0; 
+         m_lastBuyDistLevel = -1;
          DrawBasePriceLine(OP_BUY, m_buyBasePrice);
-         if(m_sellGridLevel > 0 && totalProfit > 1.0) { CloseGridPositions(OP_SELL); m_sellGridLevel = 0; m_sellBasePrice = 0; m_lastSellDistLevel = -1; ObjectDelete("GC_Base_SELL_" + IntegerToString(m_config.magicNumber)); }
+         WriteLog("[GC] Heiken Reversed to BUY | Re-calibrated BUY Base Price: " + DoubleToString(cp, m_digits));
         }
       else if(sig == SIGNAL_SELL)
         {
+         if(currentTotalProfit > 1.0 && (m_buyGridLevel > 0 || m_sellGridLevel > 0)) 
+           { 
+            WriteLog("[GC] Heiken Reversed to SELL | Total Profit: " + DoubleToString(currentTotalProfit, 2) + " | Total Close-out");
+            CloseAllPositions(); 
+            ResetBaskets(); 
+           }
+
          m_sellBasePrice = cp;
+         m_sellGridLevel = 0;
+         m_lastSellDistLevel = -1;
          DrawBasePriceLine(OP_SELL, m_sellBasePrice);
-         if(m_buyGridLevel > 0 && totalProfit > 1.0) { CloseGridPositions(OP_BUY); m_buyGridLevel = 0; m_buyBasePrice = 0; m_lastBuyDistLevel = -1; ObjectDelete("GC_Base_BUY_" + IntegerToString(m_config.magicNumber)); }
+         WriteLog("[GC] Heiken Reversed to SELL | Re-calibrated SELL Base Price: " + DoubleToString(cp, m_digits));
         }
+      
+      m_heikenReversed = false; 
      }
 
+   //--- 買入進場與加碼 ---
    if(m_config.tradeDirection != TRADE_SELL_ONLY)
      {
       bool ok = (!m_config.oneOrderPerBar || m_lastBuyBarTime != curBT);
       if(m_config.oneOrderPerBar == NO && curTime == m_lastOrderTime) ok = false;
-      if(m_buyGridLevel == 0 && stats.buyCount == 0 && (sig == SIGNAL_BUY || isSimp) && allow1 && ok)
-        {
-         double l = CalculateLots(1);
-         if(OpenGridOrder(OP_BUY, l)) 
-           { 
-            m_buyGridLevel = 1; 
-            m_buyBasePrice = cp; 
-            m_lastBuyBarTime = curBT; 
-            m_lastOrderTime = curTime; 
-            DrawBasePriceLine(OP_BUY, m_buyBasePrice);
-            WriteLog("[GC] ENTRY BUY | Lots: " + DoubleToString(l, 2) + " | Price: " + DoubleToString(cp, m_digits) + " | Level 1");
-           }
-        }
-      else if(m_buyGridLevel > 0 && m_buyGridLevel < m_config.maxGridLevels && ok)
-        {
-         if(AllowAveraging(OP_BUY))
-           {
-            double step = CalculateScaledGridDistance(m_buyGridLevel + 1);
-            double tp = (m_config.gridMode == GRID_MODE_COUNTER) ? (m_buyBasePrice - step) : (m_buyBasePrice + step);
-            if((m_config.gridMode == GRID_MODE_COUNTER && cp <= tp) || (m_config.gridMode == GRID_MODE_TREND && cp >= tp))
-              {
-               double l = CalculateLots(m_buyGridLevel + 1);
-               if(OpenGridOrder(OP_BUY, l)) 
-                 { 
-                  m_buyGridLevel++; 
-                  m_buyBasePrice = cp; 
-                  m_lastBuyBarTime = curBT; 
-                  m_lastOrderTime = curTime; 
-                  DrawBasePriceLine(OP_BUY, m_buyBasePrice);
-                  WriteLog("[GC] ENTRY BUY | Lots: " + DoubleToString(l, 2) + " | Price: " + DoubleToString(cp, m_digits) + " | Level " + IntegerToString(m_buyGridLevel));
-                 }
-              }
-           }
-        }
-     }
+      
+       if(m_buyGridLevel == 0 && (sig == SIGNAL_BUY || isSimp) && allow1 && ok)
+         {
+          double l = CalculateLots(1);
+          if(m_config.maxLots > 0 && (m_totalBuyLots + m_totalSellLots + l) > m_config.maxLots)
+            {
+             WriteLog("[GC] Skip Open BUY L1: Total lots limit reached");
+            }
+          else if(OpenGridOrder(OP_BUY, l)) 
+            { 
+             m_buyGridLevel = 1; m_buyBasePrice = cp; m_lastBuyBarTime = curBT; m_lastOrderTime = curTime; 
+             DrawBasePriceLine(OP_BUY, m_buyBasePrice);
+             WriteLog("[GC] ENTRY BUY | Lots: " + DoubleToString(l, 2) + " | Price: " + DoubleToString(cp, m_digits) + " | Level 1 (New Cycle)");
+            }
+         }
+       else if(m_buyGridLevel > 0 && m_buyGridLevel < m_config.maxGridLevels && ok)
+         {
+          if(AllowAveraging(OP_BUY))
+            {
+             double step = CalculateScaledGridDistance(m_buyGridLevel + 1);
+             double tp = (m_config.gridMode == GRID_MODE_COUNTER) ? (m_buyBasePrice - step) : (m_buyBasePrice + step);
+             if((m_config.gridMode == GRID_MODE_COUNTER && cp <= tp) || (m_config.gridMode == GRID_MODE_TREND && cp >= tp))
+               {
+                double l = CalculateLots(m_buyGridLevel + 1);
+                if(m_config.maxLots > 0 && (m_totalBuyLots + m_totalSellLots + l) > m_config.maxLots)
+                  {
+                   WriteLog("[GC] Skip Open BUY L" + IntegerToString(m_buyGridLevel+1) + ": Total lots limit reached");
+                  }
+                else if(OpenGridOrder(OP_BUY, l)) 
+                  { 
+                   m_buyGridLevel++; m_buyBasePrice = cp; m_lastBuyBarTime = curBT; m_lastOrderTime = curTime; 
+                   DrawBasePriceLine(OP_BUY, m_buyBasePrice);
+                   WriteLog("[GC] ENTRY BUY | Lots: " + DoubleToString(l, 2) + " | Price: " + DoubleToString(cp, m_digits) + " | Level " + IntegerToString(m_buyGridLevel));
+                  }
+               }
+            }
+         }
+      }
+
+   //--- 賣出進場與加碼 ---
    if(m_config.tradeDirection != TRADE_BUY_ONLY)
      {
       bool ok = (!m_config.oneOrderPerBar || m_lastSellBarTime != curBT);
       if(m_config.oneOrderPerBar == NO && curTime == m_lastOrderTime) ok = false;
-      if(m_sellGridLevel == 0 && stats.sellCount == 0 && (sig == SIGNAL_SELL || isSimp) && allow1 && ok)
+      
+      if(m_sellGridLevel == 0 && (sig == SIGNAL_SELL || isSimp) && allow1 && ok)
         {
          double l = CalculateLots(1);
-         if(OpenGridOrder(OP_SELL, l)) 
+         if(m_config.maxLots > 0 && (m_totalBuyLots + m_totalSellLots + l) > m_config.maxLots)
+           {
+            WriteLog("[GC] Skip Open SELL L1: Total lots limit reached");
+           }
+         else if(OpenGridOrder(OP_SELL, l)) 
            { 
-            m_sellGridLevel = 1; 
-            m_sellBasePrice = cp; 
-            m_lastSellBarTime = curBT; 
-            m_lastOrderTime = curTime; 
+            m_sellGridLevel = 1; m_sellBasePrice = cp; m_lastSellBarTime = curBT; m_lastOrderTime = curTime; 
             DrawBasePriceLine(OP_SELL, m_sellBasePrice);
-            WriteLog("[GC] ENTRY SELL | Lots: " + DoubleToString(l, 2) + " | Price: " + DoubleToString(cp, m_digits) + " | Level 1");
+            WriteLog("[GC] ENTRY SELL | Lots: " + DoubleToString(l, 2) + " | Price: " + DoubleToString(cp, m_digits) + " | Level 1 (New Cycle)");
            }
         }
       else if(m_sellGridLevel > 0 && m_sellGridLevel < m_config.maxGridLevels && ok)
@@ -682,12 +768,13 @@ void CGridsCore::Execute(const OrderStats &stats)
             if((m_config.gridMode == GRID_MODE_COUNTER && cp >= tp) || (m_config.gridMode == GRID_MODE_TREND && cp <= tp))
               {
                double l = CalculateLots(m_sellGridLevel + 1);
-               if(OpenGridOrder(OP_SELL, l)) 
+               if(m_config.maxLots > 0 && (m_totalBuyLots + m_totalSellLots + l) > m_config.maxLots)
+                 {
+                  WriteLog("[GC] Skip Open SELL L" + IntegerToString(m_sellGridLevel+1) + ": Total lots limit reached");
+                 }
+               else if(OpenGridOrder(OP_SELL, l)) 
                  { 
-                  m_sellGridLevel++; 
-                  m_sellBasePrice = cp; 
-                  m_lastSellBarTime = curBT; 
-                  m_lastOrderTime = curTime; 
+                  m_sellGridLevel++; m_sellBasePrice = cp; m_lastSellBarTime = curBT; m_lastOrderTime = curTime; 
                   DrawBasePriceLine(OP_SELL, m_sellBasePrice);
                   WriteLog("[GC] ENTRY SELL | Lots: " + DoubleToString(l, 2) + " | Price: " + DoubleToString(cp, m_digits) + " | Level " + IntegerToString(m_sellGridLevel));
                  }
