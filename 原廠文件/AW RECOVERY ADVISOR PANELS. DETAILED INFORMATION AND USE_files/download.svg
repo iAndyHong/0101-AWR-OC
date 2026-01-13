@@ -1,7 +1,0 @@
-<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="MetaTrader5">
-<path id="Abris" fill-rule="evenodd" clip-rule="evenodd" d="M1 15.5C1 16.3284 1.67157 17 2.5 17H15.5C16.3284 17 17 16.3284 17 15.5V14H16V15.5C16 15.7761 15.7761 16 15.5 16H2.5C2.22386 16 2 15.7761 2 15.5V14H1V15.5Z" fill="#008817"/>
-<path id="base-arrow" fill-rule="evenodd" clip-rule="evenodd" d="M11 9V7C11 4.93778 12.0404 3.11856 13.6249 2.03857C14.0477 1.75042 14.5092 1.51489 15 1.34141C14.4865 1.15991 13.9409 1.04632 13.374 1.01146C13.2503 1.00386 13.1256 1 13 1C9.68629 1 7 3.68629 7 7V9H4L9 13L14 9H11Z" fill="#008817"/>
-<path id="Arrow" fill-rule="evenodd" clip-rule="evenodd" d="M11.1492 9.99989H10V6.9999C10 5.09118 10.7637 3.36185 12.0015 2.09961C9.71851 2.5623 8 4.58041 8 6.9999V9.99989H6.85078L9 11.7193L11.1492 9.99989Z" fill="#FFC20E"/>
-</g>
-</svg>
