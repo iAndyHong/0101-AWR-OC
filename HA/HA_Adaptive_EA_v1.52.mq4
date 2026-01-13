@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Andy"
 #property link      ""
-#property version   "1.51"
+#property version   "1.52"
 
 // 引入移動平均枚舉以同步指標
 enum enMaTypes
@@ -120,7 +120,7 @@ AccountSnapshot g_snapshot;
 //+------------------------------------------------------------------+
 int OnInit()
   {
-   Print("=== HA Adaptive EA v1.51 啟動 (Canvas UI 遷移版) ===");
+   Print("=== HA Adaptive EA v1.52 啟動 (Canvas UI 遷移版) ===");
 
 // --- 初始化日誌 ---
    InitTradeLog();
@@ -129,7 +129,7 @@ int OnInit()
    if(UI_Panel_Enabled)
      {
       g_panel.Init("HA_UI_", 20, 20, 1);
-       g_panel.SetEAVersion("1.51");
+       g_panel.SetEAVersion("1.52");
       g_panel.SetSystemInfo((Trade_Mode == DIR_TREND ? "順勢" : "逆勢"), Symbol());
       // 傳遞 Magic Number 以便面板計算持倉與均價線
       g_panel.SetTradeInfo(Magic_Number);
