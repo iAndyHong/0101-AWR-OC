@@ -53,6 +53,66 @@ input  bool UseDI = true;                // 使用 +DI/-DI
 input  bool UseDIForDirection = true;     // DI 覆蓋方向
 input  int ADX_Switch_Delay = 2;          // 緩衝期（bar）
 
+// ADX state machine (skeleton for 1.53 integration)
+int g_adxCurrentModeTrade  = -1; // -1: 未設定, 0: 順勢, 1: 逆勢
+int g_adxCurrentModeMartin = -1; // -1: 未設定, 0: 馬丁, 1: 反馬丁
+int g_adxTargetTrade        = -1;
+int g_adxTargetMartin       = -1;
+int g_adxSwitchCounter      = 0;
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CalcADXIndicators()
+  {
+// 佔位符：日後接入真實 ADX、+DI、-DI 計算
+   double adx = 0.0;
+   double diPlus = 0.0;
+   double diMinus = 0.0;
+
+// 方向性覆蓋示例（位於未實作的占位，例如日後可根據 DI 方向更新）
+   if(adx > ADX_Level_High)
+     {
+      g_adxCurrentModeTrade = DIR_TREND;
+      g_adxCurrentModeMartin = MODE_ANTI_MARTY;
+     }
+   else
+      if(adx < ADX_Level_Low)
+        {
+         g_adxCurrentModeTrade = DIR_REVERSAL;
+         g_adxCurrentModeMartin = MODE_MARTINGALE;
+        }
+   g_adxSwitchCounter = 0;
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+   // 1. ADX 狀態更新與 UI 顯示
+   CalcADXIndicators();
+   int _adxTrade=0;
+   int _adxMartin=0;
+   GetADXState(_adxTrade, _adxMartin);
+   string dirStr = (_adxTrade == DIR_TREND) ? "順勢" : "逆勢";
+   string martStr = (_adxMartin == MODE_ANTI_MARTY) ? "反馬丁" : "馬丁";
+   if(UI_Panel_Enabled && g_panel.IsInitialized())
+   {
+      g_panel.SetSystemInfo(dirStr, martStr);
+   }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void UpdateADXState()
+  {
+// 目前僅作為占位：不直接改變 Trade_Mode / Martin_Type，僅更新目標狀態
+   g_adxTargetTrade = g_adxCurrentModeTrade;
+   g_adxTargetMartin = g_adxCurrentModeMartin;
+  }
+
+
 sinput string  Section_2                  = "----------------";   // [網格馬丁]
 input  ENUM_MARTINGALE_TYPE Martin_Type   = MODE_MARTINGALE;      // 加碼模式 (馬丁/反馬丁)
 input  double  Initial_Lot                = 0.01;                 // 起始下單手數
@@ -136,7 +196,7 @@ int OnInit()
    if(UI_Panel_Enabled)
      {
       g_panel.Init("HA_UI_", 20, 20, 1);
-       g_panel.SetEAVersion("1.52");
+      g_panel.SetEAVersion("1.52");
       g_panel.SetSystemInfo((Trade_Mode == DIR_TREND ? "順勢" : "逆勢"), Symbol());
       // 傳遞 Magic Number 以便面板計算持倉與均價線
       g_panel.SetTradeInfo(Magic_Number);
@@ -170,8 +230,18 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
   {
-// 1. 執行單次帳戶掃描 (效能核心：每個價格跳動點僅執行一次訂單遍歷)
+// 1. ADX 狀態更新與 UI 顯示\n   CalcADXIndicators();\n   int _adxTrade=0, _adxMartin=0; GetADXState(_adxTrade, _adxMartin);\n   string dirStr = (_adxTrade == DIR_TREND) ? "順勢" : "逆勢";\n   string martStr = (_adxMartin == MODE_ANTI_MARTY) ? "反馬丁" : "馬丁";\n   if(UI_Panel_Enabled) g_panel.SetSystemInfo(dirStr, martStr);
+   CalcADXIndicators();
+   int _adxTrade=0, _adxMartin=0;
+   GetADXState(_adxTrade, _adxMartin);
+   string dirStr = (_adxTrade == DIR_TREND) ? "順勢" : "逆勢";
+   string martStr = (_adxMartin == MODE_ANTI_MARTY) ? "反馬丁" : "馬丁";
+   if(UI_Panel_Enabled && g_panel.IsInitialized())
+     {
+      g_panel.SetSystemInfo(dirStr, martStr);
+     }
    UpdateAccountSnapshot();
+
 
 // 2. 全局出場監控 (直接引用快照數據)
    ManageGlobalExit();
@@ -226,35 +296,35 @@ void UpdateAccountSnapshot()
    ZeroMemory(g_snapshot);
    double buyVal = 0, sellVal = 0;
    for(int i = OrdersTotal() - 1; i >= 0; i--)
-      {
-       if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES) && OrderSymbol() == Symbol() && OrderMagicNumber() == Magic_Number)
-         {
-          double p = OrderProfit() + OrderSwap() + OrderCommission();
-          g_snapshot.totalProfit += p;
-          g_snapshot.totalOrders++;
-          if(OrderType() == OP_BUY)
-            {
-             g_snapshot.buyCount++;
-             g_snapshot.buyLots += OrderLots();
-             g_snapshot.buyProfit += p;
-             buyVal += OrderOpenPrice() * OrderLots();
-            }
-          if(OrderType() == OP_SELL)
-            {
-             g_snapshot.sellCount++;
-             g_snapshot.sellLots += OrderLots();
-             g_snapshot.sellProfit += p;
-             sellVal += OrderOpenPrice() * OrderLots();
-            }
-         }
-      }
-    if(g_snapshot.buyLots > 0)
-       g_snapshot.buyAvgPrice = buyVal / g_snapshot.buyLots;
-    if(g_snapshot.sellLots > 0)
-       g_snapshot.sellAvgPrice = sellVal / g_snapshot.sellLots;
-    g_snapshot.equity = AccountEquity();
-    g_snapshot.balance = AccountBalance();
-    g_snapshot.marginLevel = (AccountMargin() > 0) ? (AccountEquity() / AccountMargin() * 100.0) : 0;
+     {
+      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES) && OrderSymbol() == Symbol() && OrderMagicNumber() == Magic_Number)
+        {
+         double p = OrderProfit() + OrderSwap() + OrderCommission();
+         g_snapshot.totalProfit += p;
+         g_snapshot.totalOrders++;
+         if(OrderType() == OP_BUY)
+           {
+            g_snapshot.buyCount++;
+            g_snapshot.buyLots += OrderLots();
+            g_snapshot.buyProfit += p;
+            buyVal += OrderOpenPrice() * OrderLots();
+           }
+         if(OrderType() == OP_SELL)
+           {
+            g_snapshot.sellCount++;
+            g_snapshot.sellLots += OrderLots();
+            g_snapshot.sellProfit += p;
+            sellVal += OrderOpenPrice() * OrderLots();
+           }
+        }
+     }
+   if(g_snapshot.buyLots > 0)
+      g_snapshot.buyAvgPrice = buyVal / g_snapshot.buyLots;
+   if(g_snapshot.sellLots > 0)
+      g_snapshot.sellAvgPrice = sellVal / g_snapshot.sellLots;
+   g_snapshot.equity = AccountEquity();
+   g_snapshot.balance = AccountBalance();
+   g_snapshot.marginLevel = (AccountMargin() > 0) ? (AccountEquity() / AccountMargin() * 100.0) : 0;
   }
 
 //+------------------------------------------------------------------+
@@ -263,19 +333,30 @@ void UpdateAccountSnapshot()
 void UpdateHASignals()
   {
    int bars = iBars(NULL, HA_TimeFrame);
-   if(bars < 100) return;
- 
-   // 調整緩衝區大小
+   if(bars < 100)
+      return;
+
+// 調整緩衝區大小
    if(ArrayRange(g_haOpen, 0) != bars)
      {
-      ArrayResize(g_haOpen, bars); ArrayResize(g_haClose, bars); ArrayResize(g_haHigh, bars); ArrayResize(g_haLow, bars);
-      ArrayResize(g_haL5, bars); ArrayResize(g_haL6, bars); ArrayResize(g_haL7, bars); ArrayResize(g_haL8, bars);
-      ArrayResize(g_haL9, bars); ArrayResize(g_haL10, bars); ArrayResize(g_haL11, bars); ArrayResize(g_haL12, bars);
+      ArrayResize(g_haOpen, bars);
+      ArrayResize(g_haClose, bars);
+      ArrayResize(g_haHigh, bars);
+      ArrayResize(g_haLow, bars);
+      ArrayResize(g_haL5, bars);
+      ArrayResize(g_haL6, bars);
+      ArrayResize(g_haL7, bars);
+      ArrayResize(g_haL8, bars);
+      ArrayResize(g_haL9, bars);
+      ArrayResize(g_haL10, bars);
+      ArrayResize(g_haL11, bars);
+      ArrayResize(g_haL12, bars);
      }
 
-   int limit = 1000; 
-   if(limit > bars - 1) limit = bars - 1;
- 
+   int limit = 1000;
+   if(limit > bars - 1)
+      limit = bars - 1;
+
    for(int pos = limit; pos >= 0; pos--)
      {
       // A. 第一階段平滑 (MA1) - 完全對齊指標實例編號 0-3
@@ -283,16 +364,16 @@ void UpdateHASignals()
       double maClose = iCustomMaEa(HA_MaMethod1, iClose(NULL, HA_TimeFrame, pos), HA_MaPeriod1, pos, 1);
       double maLow   = iCustomMaEa(HA_MaMethod1, iLow(NULL, HA_TimeFrame, pos),   HA_MaPeriod1, pos, 2);
       double maHigh  = iCustomMaEa(HA_MaMethod1, iHigh(NULL, HA_TimeFrame, pos),  HA_MaPeriod1, pos, 3);
- 
+
       // B. 計算 Heiken Ashi 數值 - 完全對齊指標邏輯
       double haOpen = maOpen;
-      if(pos < bars - 1) 
+      if(pos < bars - 1)
          haOpen = (g_haL9[pos + 1] + g_haL10[pos + 1]) / 2.0;
-         
+
       double haClose = (maOpen + maHigh + maLow + maClose) / 4.0;
       double haHigh  = fmax(maHigh, fmax(haOpen, haClose));
       double haLow   = fmin(maLow,  fmin(haOpen, haClose));
- 
+
       // C. 存入初步計算緩衝區 (中間層)
       if(haOpen < haClose)
         {
@@ -306,27 +387,34 @@ void UpdateHASignals()
         }
       g_haL9[pos]  = haOpen;
       g_haL10[pos] = haClose;
- 
+
       // D. 執行第二階段平滑 (MA2) 並填充最終數據 - 完全對齊指標實例編號 4-7
       g_haLow[pos]   = iCustomMaEa(HA_MaMethod2, g_haL11[pos], HA_MaPeriod2, pos, 4);
       g_haHigh[pos]  = iCustomMaEa(HA_MaMethod2, g_haL12[pos], HA_MaPeriod2, pos, 5);
       g_haOpen[pos]  = iCustomMaEa(HA_MaMethod2, g_haL9[pos],  HA_MaPeriod2, pos, 6);
       g_haClose[pos] = iCustomMaEa(HA_MaMethod2, g_haL10[pos], HA_MaPeriod2, pos, 7);
      }
-   }
+  }
 
 // --- MA 計算核心 (完全移植自指標) ---
 double iCustomMaEa(int mode, double price, double length, int r, int instanceNo = 0)
   {
    switch(mode)
      {
-      case ma_sma:   return(iSmaEa(price, (int)length, r, instanceNo));
-      case ma_ema:   return(iEmaEa(price, length, r, instanceNo));
-      case ma_smma:  return(iSmmaEa(price, (int)length, r, instanceNo));
-      case ma_lwma:  return(iLwmaEa(price, length, r, instanceNo));
-      case ma_tema:  return(iTemaEa(price, (int)length, r, instanceNo));
-      case ma_hma:   return(iHmaEa(price, (int)length, r, instanceNo));
-      default:       return(price);
+      case ma_sma:
+         return(iSmaEa(price, (int)length, r, instanceNo));
+      case ma_ema:
+         return(iEmaEa(price, length, r, instanceNo));
+      case ma_smma:
+         return(iSmmaEa(price, (int)length, r, instanceNo));
+      case ma_lwma:
+         return(iLwmaEa(price, length, r, instanceNo));
+      case ma_tema:
+         return(iTemaEa(price, (int)length, r, instanceNo));
+      case ma_hma:
+         return(iHmaEa(price, (int)length, r, instanceNo));
+      default:
+         return(price);
      }
   }
 
@@ -334,10 +422,13 @@ double workSmaEa[][8];
 double iSmaEa(double price, int period, int r, int instanceNo = 0)
   {
    int bars = iBars(NULL, HA_TimeFrame);
-   if(ArrayRange(workSmaEa, 0) != bars) ArrayResize(workSmaEa, bars);
-   int k; workSmaEa[r][instanceNo] = price;
+   if(ArrayRange(workSmaEa, 0) != bars)
+      ArrayResize(workSmaEa, bars);
+   int k;
+   workSmaEa[r][instanceNo] = price;
    double sum = 0;
-   for(k = 0; k < period && (r - k) >= 0; k++) sum += workSmaEa[r - k][instanceNo];
+   for(k = 0; k < period && (r - k) >= 0; k++)
+      sum += workSmaEa[r - k][instanceNo];
    return(sum / fmax(k, 1));
   }
 
@@ -345,9 +436,11 @@ double workEmaEa[][8];
 double iEmaEa(double price, double period, int r, int instanceNo = 0)
   {
    int bars = iBars(NULL, HA_TimeFrame);
-   if(ArrayRange(workEmaEa, 0) != bars) ArrayResize(workEmaEa, bars);
+   if(ArrayRange(workEmaEa, 0) != bars)
+      ArrayResize(workEmaEa, bars);
    workEmaEa[r][instanceNo] = price;
-   if(r > 0 && period > 1) workEmaEa[r][instanceNo] = workEmaEa[r - 1][instanceNo] + (2.0 / (1.0 + period)) * (price - workEmaEa[r - 1][instanceNo]);
+   if(r > 0 && period > 1)
+      workEmaEa[r][instanceNo] = workEmaEa[r - 1][instanceNo] + (2.0 / (1.0 + period)) * (price - workEmaEa[r - 1][instanceNo]);
    return(workEmaEa[r][instanceNo]);
   }
 
@@ -355,9 +448,11 @@ double workSmmaEa[][8];
 double iSmmaEa(double price, double period, int r, int instanceNo = 0)
   {
    int bars = iBars(NULL, HA_TimeFrame);
-   if(ArrayRange(workSmmaEa, 0) != bars) ArrayResize(workSmmaEa, bars);
+   if(ArrayRange(workSmmaEa, 0) != bars)
+      ArrayResize(workSmmaEa, bars);
    workSmmaEa[r][instanceNo] = price;
-   if(r > 0 && period > 1) workSmmaEa[r][instanceNo] = workSmmaEa[r - 1][instanceNo] + (price - workSmmaEa[r - 1][instanceNo]) / period;
+   if(r > 0 && period > 1)
+      workSmmaEa[r][instanceNo] = workSmmaEa[r - 1][instanceNo] + (price - workSmmaEa[r - 1][instanceNo]) / period;
    return(workSmmaEa[r][instanceNo]);
   }
 
@@ -365,11 +460,18 @@ double workLwmaEa[][8];
 double iLwmaEa(double price, double period, int r, int instanceNo = 0)
   {
    int bars = iBars(NULL, HA_TimeFrame);
-   if(ArrayRange(workLwmaEa, 0) != bars) ArrayResize(workLwmaEa, bars);
+   if(ArrayRange(workLwmaEa, 0) != bars)
+      ArrayResize(workLwmaEa, bars);
    workLwmaEa[r][instanceNo] = price;
-   if(period <= 1) return(price);
+   if(period <= 1)
+      return(price);
    double sumw = 0, sum = 0;
-   for(int k = 0; k < (int)period && (r - k) >= 0; k++) { double w = period - k; sumw += w; sum += w * workLwmaEa[r - k][instanceNo]; }
+   for(int k = 0; k < (int)period && (r - k) >= 0; k++)
+     {
+      double w = period - k;
+      sumw += w;
+      sum += w * workLwmaEa[r - k][instanceNo];
+     }
    return(sum / fmax(sumw, 1));
   }
 
@@ -377,10 +479,13 @@ double workTemaEa[][24];
 double iTemaEa(double price, int period, int r, int instanceNo = 0)
   {
    int bars = iBars(NULL, HA_TimeFrame);
-   if(ArrayRange(workTemaEa, 0) != bars) ArrayResize(workTemaEa, bars);
+   if(ArrayRange(workTemaEa, 0) != bars)
+      ArrayResize(workTemaEa, bars);
    int n = instanceNo * 3;
    double alpha = 2.0 / (1.0 + period);
-   workTemaEa[r][n] = price; workTemaEa[r][n+1] = price; workTemaEa[r][n+2] = price;
+   workTemaEa[r][n] = price;
+   workTemaEa[r][n+1] = price;
+   workTemaEa[r][n+2] = price;
    if(r > 0)
      {
       workTemaEa[r][n]   = workTemaEa[r-1][n]   + alpha * (price - workTemaEa[r-1][n]);
@@ -394,13 +499,15 @@ double workHmaEa[][16];
 double iHmaEa(double price, int period, int r, int instanceNo = 0)
   {
    int bars = iBars(NULL, HA_TimeFrame);
-   if(ArrayRange(workHmaEa, 0) != bars) ArrayResize(workHmaEa, bars);
-   if(period <= 1) return(price);
- 
+   if(ArrayRange(workHmaEa, 0) != bars)
+      ArrayResize(workHmaEa, bars);
+   if(period <= 1)
+      return(price);
+
    int n = instanceNo * 2;
    double lwmaHalf = iLwmaHmaEa(price, period / 2, r, n);
    double lwmaFull = iLwmaHmaEa(price, period,     r, n + 1);
-   
+
    double diff = 2.0 * lwmaHalf - lwmaFull;
    return(iLwmaHmaEa(diff, (int)MathSqrt(period), r, n + 8));
   }
@@ -409,11 +516,18 @@ double workLwmaHmaEa[][24];
 double iLwmaHmaEa(double price, double period, int r, int instanceNo = 0)
   {
    int bars = iBars(NULL, HA_TimeFrame);
-   if(ArrayRange(workLwmaHmaEa, 0) != bars) ArrayResize(workLwmaHmaEa, bars);
+   if(ArrayRange(workLwmaHmaEa, 0) != bars)
+      ArrayResize(workLwmaHmaEa, bars);
    workLwmaHmaEa[r][instanceNo] = price;
-   if(period <= 1) return(price);
+   if(period <= 1)
+      return(price);
    double sumw = 0, sum = 0;
-   for(int k = 0; k < (int)period && (r - k) >= 0; k++) { double w = period - k; sumw += w; sum += w * workLwmaHmaEa[r - k][instanceNo]; }
+   for(int k = 0; k < (int)period && (r - k) >= 0; k++)
+     {
+      double w = period - k;
+      sumw += w;
+      sum += w * workLwmaHmaEa[r - k][instanceNo];
+     }
    return(sum / fmax(sumw, 1));
   }
 
@@ -435,9 +549,9 @@ void ExecuteBarEntry()
   {
    if(((Ask - Bid) / Point) > Max_Spread * 10)
       return;
-   
+
    UpdateHASignals(); // 每次檢測前更新內部平滑數據
-   
+
    double ho = g_haOpen[1];
    double hc = g_haClose[1];
    int haTrend = 0;
@@ -532,7 +646,7 @@ void CheckAndSendGridOrder(int type)
 void SendOrder(int type, double lot, string reason, double d, double dm, double lm)
   {
    double p = (type == OP_BUY) ? Ask : Bid;
-    int t = OrderSend(Symbol(), type, lot, p, 3, 0, 0, "HA_v1.52", Magic_Number, 0, (type == OP_BUY ? clrBlue : clrRed));
+   int t = OrderSend(Symbol(), type, lot, p, 3, 0, 0, "HA_v1.52", Magic_Number, 0, (type == OP_BUY ? clrBlue : clrRed));
    if(t > 0)
       WriteToLog(StringFormat("進場 [%s]: 價格 %.5f, 原因: %s, 格距: %.1f, 格距倍率: %.2f, 手數倍率: %.2f", (type == OP_BUY ? "BUY" : "SELL"), p, reason, d, dm, lm));
   }
@@ -662,7 +776,7 @@ void InitTradeLog()
    int h = FileOpen(g_fullLogPath, FILE_WRITE|FILE_TXT|FILE_SHARE_READ);
    if(h != INVALID_HANDLE)
      {
-       FileWrite(h, "=== HA Adaptive EA v1.52 Log ===");
+      FileWrite(h, "=== HA Adaptive EA v1.52 Log ===");
       FileClose(h);
      }
   }
