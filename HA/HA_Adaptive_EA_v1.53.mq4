@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Andy"
 #property link      ""
-#property version   "1.52"
+#property version   "1.53"
 
 // 引入移動平均枚舉以同步指標
 enum enMaTypes
@@ -42,7 +42,7 @@ sinput string  Section_1                  = "----------------";   // [趨勢過�
 input  ENUM_TIMEFRAMES HA_TimeFrame       = PERIOD_CURRENT;       // Heiken Ashi 運算週期
 input  enMaTypes       HA_MaMethod1       = ma_ema;               // HA 平滑方法 1
 input  int             HA_MaPeriod1       = 6;                    // HA 平滑週期 1
-input  enMaTypes       HA_MaMethod2       = ma_lwma;              // HA 平滑方法 2
+input  enMaTypes       HA_MaMethod2       = ma_hma;               // HA 平滑方法 2
 input  int             HA_MaPeriod2       = 2;                    // HA 平滑週期 2
 input  ENUM_TRADE_DIRECTION Trade_Mode    = DIR_TREND;            // 趨勢過濾模式 (順勢/逆勢)
 input  int ADX_Period = 14;              // ADX 計算週期
@@ -59,58 +59,100 @@ int g_adxCurrentModeMartin = -1; // -1: 未設定, 0: 馬丁, 1: 反馬丁
 int g_adxTargetTrade        = -1;
 int g_adxTargetMartin       = -1;
 int g_adxSwitchCounter      = 0;
+double g_adxValue           = 0;  // ADX 當前值
+double g_diPlusValue        = 0;  // +DI 當前值
+double g_diMinusValue       = 0;  // -DI 當前值
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 void CalcADXIndicators()
   {
-// 佔位符：日後接入真實 ADX、+DI、-DI 計算
-   double adx = 0.0;
-   double diPlus = 0.0;
-   double diMinus = 0.0;
+// 獲取 ADX 指標數值並存儲到全域變數
+   g_adxValue = iADX(NULL, HA_TimeFrame, ADX_Period, PRICE_CLOSE, MODE_MAIN, 1);
+   g_diPlusValue = iADX(NULL, HA_TimeFrame, ADX_Period, PRICE_CLOSE, MODE_PLUSDI, 1);
+   g_diMinusValue = iADX(NULL, HA_TimeFrame, ADX_Period, PRICE_CLOSE, MODE_MINUSDI, 1);
 
-// 方向性覆蓋示例（位於未實作的占位，例如日後可根據 DI 方向更新）
+   double adx = g_adxValue;
+   double diPlus = g_diPlusValue;
+   double diMinus = g_diMinusValue;
+
+// 根據 ADX 數值判斷趨勢強度
    if(adx > ADX_Level_High)
      {
-      g_adxCurrentModeTrade = DIR_TREND;
-      g_adxCurrentModeMartin = MODE_ANTI_MARTY;
+      // 強趨勢：順勢操作 + 反馬丁
+      g_adxTargetTrade = DIR_TREND;
+      g_adxTargetMartin = MODE_ANTI_MARTY;
      }
    else
       if(adx < ADX_Level_Low)
         {
-         g_adxCurrentModeTrade = DIR_REVERSAL;
-         g_adxCurrentModeMartin = MODE_MARTINGALE;
+         // 震盪區：逆向操作 + 馬丁
+         g_adxTargetTrade = DIR_REVERSAL;
+         g_adxTargetMartin = MODE_MARTINGALE;
         }
-   g_adxSwitchCounter = 0;
-  }
+      else
+        {
+         // 中間區：維持現狀
+         return;
+        }
 
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void OnTick()
-{
-   // 1. ADX 狀態更新與 UI 顯示
-   CalcADXIndicators();
-   int _adxTrade=0;
-   int _adxMartin=0;
-   GetADXState(_adxTrade, _adxMartin);
-   string dirStr = (_adxTrade == DIR_TREND) ? "順勢" : "逆勢";
-   string martStr = (_adxMartin == MODE_ANTI_MARTY) ? "反馬丁" : "馬丁";
-   if(UI_Panel_Enabled && g_panel.IsInitialized())
-   {
-      g_panel.SetSystemInfo(dirStr, martStr);
-   }
+// 如果啟用 DI 方向覆蓋
+   if(UseDI && UseDIForDirection)
+     {
+      if(diPlus > diMinus)
+         g_adxTargetTrade = DIR_TREND;  // +DI > -DI：看多
+      else
+         g_adxTargetTrade = DIR_REVERSAL;  // -DI > +DI：看空
+     }
+  }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 void UpdateADXState()
   {
-// 目前僅作為占位：不直接改變 Trade_Mode / Martin_Type，僅更新目標狀態
-   g_adxTargetTrade = g_adxCurrentModeTrade;
-   g_adxTargetMartin = g_adxCurrentModeMartin;
+// 初始化狀態（首次執行）
+   if(g_adxCurrentModeTrade == -1 || g_adxCurrentModeMartin == -1)
+     {
+      g_adxCurrentModeTrade = g_adxTargetTrade;
+      g_adxCurrentModeMartin = g_adxTargetMartin;
+      g_adxSwitchCounter = 0;
+      return;
+     }
+
+// 檢查是否需要切換狀態
+   bool needSwitchTrade = (g_adxTargetTrade != g_adxCurrentModeTrade);
+   bool needSwitchMartin = (g_adxTargetMartin != g_adxCurrentModeMartin);
+
+   if(!needSwitchTrade && !needSwitchMartin)
+     {
+      // 無需切換，重置計數器
+      g_adxSwitchCounter = 0;
+      return;
+     }
+
+// 需要切換，檢查緩衝期
+   if(g_adxSwitchCounter < ADX_Switch_Delay)
+     {
+      // 緩衝期未到，繼續計數
+      g_adxSwitchCounter++;
+      return;
+     }
+
+// 緩衝期已到，執行切換
+   g_adxCurrentModeTrade = g_adxTargetTrade;
+   g_adxCurrentModeMartin = g_adxTargetMartin;
+   g_adxSwitchCounter = 0;
   }
+
+// 取得當前 ADX 狀態（返回參數通過引用傳遞）
+void GetADXState(int &tradeMode, int &martinMode)
+  {
+   tradeMode = g_adxCurrentModeTrade;
+   martinMode = g_adxCurrentModeMartin;
+  }
+
 
 
 sinput string  Section_2                  = "----------------";   // [網格馬丁]
@@ -187,7 +229,7 @@ AccountSnapshot g_snapshot;
 //+------------------------------------------------------------------+
 int OnInit()
   {
-   Print("=== HA Adaptive EA v1.52 啟動 (Canvas UI 遷移版) ===");
+   Print("=== HA Adaptive EA v1.53 啟動 (ADX 自適應切換版) ===");
 
 // --- 初始化日誌 ---
    InitTradeLog();
@@ -196,7 +238,7 @@ int OnInit()
    if(UI_Panel_Enabled)
      {
       g_panel.Init("HA_UI_", 20, 20, 1);
-      g_panel.SetEAVersion("1.52");
+      g_panel.SetEAVersion("1.53");
       g_panel.SetSystemInfo((Trade_Mode == DIR_TREND ? "順勢" : "逆勢"), Symbol());
       // 傳遞 Magic Number 以便面板計算持倉與均價線
       g_panel.SetTradeInfo(Magic_Number);
@@ -220,7 +262,7 @@ int OnInit()
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
   {
-   g_panel.Deinit();
+   // g_panel.Deinit(); // 停止清除 UI
    g_arrowMgr.ArrowOnDeinit();
    Print("EA 已停止。");
   }
@@ -230,15 +272,18 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
   {
-// 1. ADX 狀態更新與 UI 顯示\n   CalcADXIndicators();\n   int _adxTrade=0, _adxMartin=0; GetADXState(_adxTrade, _adxMartin);\n   string dirStr = (_adxTrade == DIR_TREND) ? "順勢" : "逆勢";\n   string martStr = (_adxMartin == MODE_ANTI_MARTY) ? "反馬丁" : "馬丁";\n   if(UI_Panel_Enabled) g_panel.SetSystemInfo(dirStr, martStr);
+// 1. ADX 狀態更新與 UI 顯示
    CalcADXIndicators();
-   int _adxTrade=0, _adxMartin=0;
-   GetADXState(_adxTrade, _adxMartin);
-   string dirStr = (_adxTrade == DIR_TREND) ? "順勢" : "逆勢";
-   string martStr = (_adxMartin == MODE_ANTI_MARTY) ? "反馬丁" : "馬丁";
+   UpdateADXState();
+   int adxTradeMode = DIR_TREND;
+   int adxMartinMode = MODE_MARTINGALE;
+   GetADXState(adxTradeMode, adxMartinMode);
+   string dirStr = (adxTradeMode == DIR_TREND) ? "順勢" : "逆勢";
+   string martStr = (adxMartinMode == MODE_ANTI_MARTY) ? "反馬丁" : "馬丁";
+   string adxInfo = StringFormat(" / ADX:%.1f DI+:%.1f DI-:%.1f", g_adxValue, g_diPlusValue, g_diMinusValue);
    if(UI_Panel_Enabled && g_panel.IsInitialized())
      {
-      g_panel.SetSystemInfo(dirStr, martStr);
+      g_panel.SetSystemInfo(dirStr, martStr + " " + adxInfo);
      }
    UpdateAccountSnapshot();
 
@@ -844,4 +889,6 @@ void InitHATrend()
       g_prevHaTrend = (hc > ho ? -1 : 1);
      }
   }
+//+------------------------------------------------------------------+
+
 //+------------------------------------------------------------------+

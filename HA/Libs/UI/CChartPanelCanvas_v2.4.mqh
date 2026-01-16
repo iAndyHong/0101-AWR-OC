@@ -232,6 +232,10 @@ bool CChartPanelCanvas::Init(string prefix, int x = 20, int y = 20, int updateIn
    m_updateInterval = updateInterval;
    m_canvasName = m_prefix + "Panel";
 
+   // 修正：如果物件已存在，先刪除它，確保 Canvas 能夠重新正確建立
+   if(ObjectFind(0, m_canvasName) >= 0)
+      ObjectDelete(0, m_canvasName);
+
    if(!m_canvas.CreateBitmapLabel(m_canvasName, m_baseX, m_baseY, m_width, m_height, COLOR_FORMAT_ARGB_NORMALIZE))
      {
       Print("錯誤: 無法建立 Canvas 面板");
@@ -465,7 +469,7 @@ bool CChartPanelCanvas::UpdateWithStats(const OrderStats &stats, bool forceUpdat
    y += m_lineHeight;
    m_canvas.TextOut(col1, y, StringFormat("餘額: %.2f / 淨值: %.2f / 累積: %.2f", AccountBalance(), AccountEquity(), m_accumulatedProfit), ColorToARGB(m_clrText));
    y += m_lineHeight;
-   m_canvas.TextOut(col1, y, "系統: " + m_tradeMode + " / " + m_tradeSymbol, ColorToARGB(m_clrNeutral));
+    m_canvas.TextOut(col1, y, "系統: " + m_tradeMode + " / " + m_tradeSymbol, ColorToARGB(clrWhite));
 
    m_canvas.Update();
    return true;
@@ -639,7 +643,7 @@ void CChartPanelCanvas::SaveAsLabels()
    row++;
    CreateLabel("L" + IntegerToString(row), x, y + row * lineH, StringFormat("餘額: %.2f / 淨值: %.2f / 累積: %.2f", AccountBalance(), AccountEquity(), m_accumulatedProfit), m_clrText, 10);
    row++;
-   CreateLabel("L" + IntegerToString(row), x, y + row * lineH, "系統: " + m_tradeMode + " / " + m_tradeSymbol, m_clrNeutral, 10);
+   CreateLabel("L" + IntegerToString(row), x, y + row * lineH, "系統: " + m_tradeMode + " / " + m_tradeSymbol, clrWhite, 10);
 
    Print("[CChartPanelCanvas] 已建立 OBJ_LABEL 保留測試結果");
   }
